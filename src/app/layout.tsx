@@ -23,17 +23,31 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AgenticPencil — Stop guessing what to publish",
+  title: "AgenticPencil — AI SEO Tool for Content Strategy & Visibility",
   description:
-    "AI visibility intelligence, keyword research, and competitor analysis — turned into a prioritized content map. One API call. Your agentic content strategist.",
+    "AI SEO tool for content strategy. AI visibility tracking, content gap analysis, and competitor research turned into a prioritized content map. Answer engine optimization via one API call.",
+  keywords: [
+    "AI SEO tool",
+    "content strategy API",
+    "AI visibility tracking",
+    "answer engine optimization",
+    "AEO optimization",
+    "content gap analysis",
+    "content mapping",
+    "AI content strategy",
+    "SEO content audit",
+    "content intelligence platform",
+    "sitemap cannibalization",
+    "AI search optimization",
+  ],
   metadataBase: new URL("https://agenticpencil.com"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "AgenticPencil — Stop guessing what to publish",
+    title: "AgenticPencil — AI Content Strategy & SEO Intelligence Tool",
     description:
-      "AI visibility intelligence, keyword research, and competitor analysis — turned into a prioritized content map. One API call.",
+      "AI visibility tracking, content gap analysis, and competitor research — turned into a prioritized content map. One API call. Know what to write.",
     url: "https://agenticpencil.com",
     siteName: "AgenticPencil",
     locale: "en_US",
@@ -41,9 +55,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AgenticPencil — Stop guessing what to publish",
+    title: "AgenticPencil — AI SEO Tool for Content Strategy",
     description:
-      "Your agentic content strategist. Know what to write.",
+      "Your agentic content strategist. AI visibility tracking, content gap analysis, and competitor intelligence — one API call.",
   },
   robots: {
     index: true,
