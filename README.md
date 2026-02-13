@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AgenticPencil
 
-## Getting Started
+**Your agentic content strategist. Know what to write.**
 
-First, run the development server:
+Stop guessing what to publish. AgenticPencil turns AI visibility intelligence, keyword research, and competitor analysis into a prioritized content map. One API call.
+
+## What it does
+
+- **Content Mapping** — Full topic clustering, prioritization, and content gap analysis. Give us your domain, we give you your next 100 articles ranked by impact.
+- **AI Visibility Intelligence** — Real browser-based monitoring of ChatGPT, Perplexity, Gemini, Google AI Mode, and more. Not API calls — actual user interface scraping, the same way top SEO and AI SEO companies do.
+- **Enterprise Writer API** — 14-step content pipeline with brand guidelines, schema markup, internal linking, and direct Webflow publishing.
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Next.js 16 (App Router)
+- TypeScript
+- Tailwind CSS v4
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+  app/
+    layout.tsx          — Root layout with fonts + metadata
+    page.tsx            — Landing page composition
+    globals.css         — All custom styles
+  components/
+    FadeIn.tsx          — Intersection observer animation wrapper
+    Nav.tsx             — Fixed navigation bar
+    Hero.tsx            — Hero section
+    Statement.tsx       — Quote section
+    ApiDemo.tsx         — Typing code window demo
+    Features.tsx        — 3-card features grid
+    Analysis.tsx        — Sitemap visual + analysis items + geo pills
+    DataSources.tsx     — Data source logos strip
+    Comparison.tsx      — Comparison table
+    FinalCta.tsx        — Bottom CTA
+    Footer.tsx          — Footer
+```
