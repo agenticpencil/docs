@@ -1,55 +1,73 @@
 # AgenticPencil — Keyword Research (DataForSEO, Feb 2026)
 
-## Primary Target Keywords
+## Target Keywords with Difficulty Scores
 
-| Keyword | Vol | Competition | CPC |
+### Tier 1: Primary targets (realistic to rank for)
+
+| Keyword | Vol | KD | Competition | CPC | Notes |
+|---|---|---|---|---|---|
+| answer engine optimization | 1,600 | 30 | MEDIUM | $13.47 | Core category — very winnable |
+| SEO API / API for SEO | 880 | 20 | LOW | $28.89 | Low difficulty, high intent |
+| AI search optimization | 720 | — | MEDIUM | $25.00 | Growing term |
+| seo content audit | 590 | — | LOW | $12.52 | Direct feature |
+| seo data api | 210 | 13 | LOW | $28.44 | Very low KD |
+| answer engine optimization tool | 140 | 24 | LOW | $33.24 | High CPC, easy to rank |
+| seo audit api | 90 | 12 | LOW | $21.87 | Very low KD |
+| AI agent SEO | 90 | — | LOW | $20.81 | Emerging, can own early |
+
+### Tier 2: Moderate difficulty, high value
+
+| Keyword | Vol | KD | Competition | CPC | Notes |
+|---|---|---|---|---|---|
+| AI SEO tool | 2,400 | 36 | LOW | $30.63 | Primary category term |
+| ai tool for seo | 1,000 | 36 | LOW | $18.58 | Variation |
+| best ai seo tool | 720 | 31 | LOW | $22.51 | Commercial intent |
+| content gap analysis | 390 | — | MEDIUM | $8.37 | Exact feature match |
+| AEO optimization | 320 | 30 | HIGH | $26.91 | Growing, high CPC |
+| AI visibility tracking | 260 | — | LOW | $30.86 | Our exact product |
+| seo tool api | 480 | 28 | LOW | $21.05 | Moderate |
+| programmatic SEO tool | 170 | — | LOW | $10.81 | Adjacent |
+
+### Tier 3: Pre-search / own early (no volume yet)
+
+| Keyword | Vol | KD | Notes |
 |---|---|---|---|
-| AI SEO tool | 2,400 | LOW | $30.63 |
-| answer engine optimization | 1,600 | MEDIUM | $13.47 |
-| AI search optimization | 720 | MEDIUM | $25.00 |
-| seo content audit | 590 | LOW | $12.52 |
-| content gap analysis | 390 | MEDIUM | $8.37 |
-| AEO optimization | 320 | HIGH | $26.91 |
-| content planning tool | 320 | LOW | $30.36 |
-| AI visibility tracking | 260 | LOW | $30.86 |
-| content intelligence platform | 110 | LOW | $82.94 |
+| MCP server SEO | <10 | — | Zero competition, we can own this |
+| MCP SEO | <10 | — | Zero competition |
+| agentic SEO | <50 | — | Category we're defining |
+| agentic content | <50 | — | Category we're defining |
+| content strategy API | <50 | — | Exact product description |
+| AI content mapping | <50 | — | Exact product description |
+| AI citation tracking | <50 | — | Exact feature |
+| seo content mapping | 10 | 0 | Zero difficulty, can own |
 
-## Secondary Keywords (weave into content)
+### MCP Server ecosystem (massive traffic, adjacent)
 
-| Keyword | Vol |
-|---|---|
-| artificial intelligence search engine optimization | 8,100 |
-| seo content analysis | 590 |
-| seo content tool | 590 |
-| ai seo software | 480 |
-| ai content optimization tools | 210 |
-| ai keyword research | 210 |
-| seo content planner | 110 |
-| ai seo platform | 140 |
+| Keyword | Vol | KD | Notes |
+|---|---|---|---|
+| mcp server | 49,500 | 55 | Huge volume, harder |
+| claude code mcp server | 880 | 16 | Low KD, perfect audience |
+| best mcp server | 880 | 47 | Listicle opportunity |
+| notion mcp server | 880 | 13 | Very low KD |
 
-## Long-tail / Emerging
+### Content intelligence (high CPC = enterprise buyers)
 
-| Keyword | Vol |
-|---|---|
-| seo content gap analysis | 390 |
-| ai seo content generator | 390 |
-| seo competitor analysis software | 260 |
-| content strategy API | <50 |
-| AI content mapping | <50 |
-| agentic SEO | <50 |
-| AI citation tracking | <50 |
+| Keyword | Vol | KD | CPC | Notes |
+|---|---|---|---|---|
+| content intelligence platform | 110 | — | $82.94 | Highest CPC — enterprise |
+| ai seo platform | 140 | — | $38.59 | Enterprise |
+| keyword research api | 170 | — | $32.88 | Developer audience |
 
-## Key Insights
+## Strategy
 
-- "AI SEO tool" (2,400 vol) is our primary category keyword — must be in title tag
-- "answer engine optimization" / "AEO" (1,600 + 320 vol) is our differentiator — growing fast, high CPC signals commercial intent
-- "content gap analysis" (390 vol) is directly what we do
-- "AI visibility tracking" (260 vol) is exactly our product feature — low competition
-- "content intelligence platform" (110 vol) has $82.94 CPC — highest commercial value, enterprise buyers
-- "agentic SEO" and "content strategy API" are pre-search — we can own these terms early
+1. **Own the AEO niche** — "answer engine optimization" (KD 30, 1,600 vol) is our best shot. Moderate difficulty, growing fast, directly our product.
+2. **SEO API keywords** — KD 12-20 range, very winnable. Build content around "SEO API", "seo audit api", "seo data api".
+3. **MCP for SEO** — Zero competition. Write the definitive content now and own it as search volume grows.
+4. **AI SEO tool** — KD 36, harder but not impossible. Need strong backlinks and content depth.
+5. **Pre-search terms** — "agentic SEO", "content strategy API", "AI content mapping" have no volume yet but we should own these pages for when demand arrives.
 
-## Meta Optimization
+## Meta Tag Optimization (current)
 
-**Title tag (homepage):** AgenticPencil — AI SEO Tool for Content Strategy & Visibility
-**Description:** AI SEO tool for content strategy. AI visibility tracking, content gap analysis, and competitor research turned into a prioritized content map. One API call.
-**OG Title:** AgenticPencil — AI Content Strategy & SEO Intelligence Tool
+- **Title:** AgenticPencil — AI SEO Tool for Content Strategy & Visibility (62 chars)
+- **Description:** AI SEO tool for content strategy. AI visibility tracking, content gap analysis, and competitor research turned into a prioritized content map. Answer engine optimization via one API call. (186 chars — trim to 155)
+- **OG Title:** AgenticPencil — AI Content Strategy & SEO Intelligence Tool

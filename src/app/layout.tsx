@@ -25,9 +25,10 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "AgenticPencil — AI SEO Tool for Content Strategy & Visibility",
   description:
-    "AI SEO tool for content strategy. AI visibility tracking, content gap analysis, and competitor research turned into a prioritized content map. Answer engine optimization via one API call.",
+    "AI SEO tool for content strategy. AI visibility tracking, content gap analysis & competitor research — as a prioritized content map. One API call.",
   keywords: [
     "AI SEO tool",
+    "SEO API",
     "content strategy API",
     "AI visibility tracking",
     "answer engine optimization",
@@ -39,6 +40,9 @@ export const metadata: Metadata = {
     "content intelligence platform",
     "sitemap cannibalization",
     "AI search optimization",
+    "MCP server SEO",
+    "agentic SEO",
+    "seo data api",
   ],
   metadataBase: new URL("https://agenticpencil.com"),
   alternates: {
