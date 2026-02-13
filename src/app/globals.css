@@ -794,6 +794,130 @@
   margin-bottom: 48px;
 }
 
+/* CONTENT PAGES */
+.content-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 140px 48px 100px;
+}
+
+.content-page-label {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 16px;
+}
+
+.content-page h1 {
+  font-family: var(--font-instrument-serif), serif;
+  font-size: clamp(32px, 4.5vw, 48px);
+  font-weight: 400;
+  letter-spacing: -1.5px;
+  line-height: 1.15;
+  margin-bottom: 20px;
+  color: #1A1A1A;
+}
+
+.content-page-subtitle {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 18px;
+  line-height: 1.7;
+  color: #777;
+  font-weight: 300;
+  margin-bottom: 56px;
+}
+
+.content-page-subtitle a {
+  color: #555;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.content-page section {
+  margin-bottom: 48px;
+}
+
+.content-page h2 {
+  font-family: var(--font-instrument-serif), serif;
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+  margin-bottom: 16px;
+  color: #1A1A1A;
+}
+
+.content-page h3 {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  margin-top: 28px;
+  color: #1A1A1A;
+}
+
+.content-page p {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #555;
+  font-weight: 300;
+  margin-bottom: 16px;
+}
+
+.content-page a {
+  color: #1A1A1A;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: #DDD;
+  transition: text-decoration-color 0.2s;
+}
+
+.content-page a:hover {
+  text-decoration-color: #1A1A1A;
+}
+
+.content-page ul,
+.content-page ol {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #555;
+  font-weight: 300;
+  padding-left: 24px;
+  margin-bottom: 16px;
+}
+
+.content-page li {
+  margin-bottom: 8px;
+}
+
+.content-page code {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 14px;
+  background: #F4F4F0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #555;
+}
+
+.content-page pre {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.content-page-cta {
+  margin: 40px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.content-page .comparison-table {
+  margin: 24px 0;
+}
+
 .legal-page section {
   margin-bottom: 36px;
 }
@@ -850,4 +974,9 @@
   .footer { padding: 32px 24px; flex-direction: column; gap: 16px; }
   .faq-section { padding: 60px 24px; }
   .legal-page { padding: 120px 24px 80px; }
+  .content-page { padding: 120px 24px 80px; }
+  .content-page h1 { font-size: 32px; }
+  .content-page h2 { font-size: 22px; }
+  .content-page h3 { font-size: 18px; }
+  .content-page .comparison-table { font-size: 13px; }
 }
