@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer className="footer">
@@ -5,6 +7,8 @@ export default function Footer() {
       <div className="footer-links">
         <a>API Docs</a>
         <a>Pricing</a>
+        <Link href="/privacy">Privacy</Link>
+        <Link href="/terms">Terms</Link>
         <a>GitHub</a>
         <a>Twitter</a>
       </div>

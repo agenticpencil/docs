@@ -6,12 +6,15 @@ import Features from "@/components/Features";
 import Analysis from "@/components/Analysis";
 import DataSources from "@/components/DataSources";
 import Comparison from "@/components/Comparison";
+import Faq from "@/components/Faq";
 import FinalCta from "@/components/FinalCta";
 import Footer from "@/components/Footer";
+import SchemaMarkup from "@/components/SchemaMarkup";
 
 export default function Home() {
   return (
     <>
+      <SchemaMarkup />
       <Nav />
       <Hero />
       <Statement />
@@ -20,6 +23,7 @@ export default function Home() {
       <Analysis />
       <DataSources />
       <Comparison />
+      <Faq />
       <FinalCta />
       <Footer />
     </>

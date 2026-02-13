@@ -1,0 +1,26 @@
+# AgenticPencil
+
+> Your agentic content strategist. Know what to write.
+
+AgenticPencil is a content strategy API that turns AI visibility intelligence, keyword research, and competitor analysis into a prioritized content map. One API call — your next 100 articles, ranked by impact.
+
+## What AgenticPencil does
+
+- Content Mapping: Full topic clustering, prioritization, and content gap analysis. Pass a domain, get back a ranked list of exactly what to write and why.
+- AI Visibility Intelligence: Real browser-based monitoring of every major AI model (ChatGPT, Perplexity, Gemini, Google AI Mode, Copilot). Not API calls — actual user interface scraping.
+- Sitemap Cannibalization Audit: Detects pages competing against each other for the same queries. Identifies what to consolidate, redirect, or leave alone.
+- Competitor Cross-Analysis: Map your content against up to 10 competitors. See every topic they cover that you don't and where AI models are citing them instead of you.
+- Multi-Geography Intelligence: Run analysis across 50+ countries. AI visibility tracked per-region across all major models.
+- Enterprise Writer API: 14-step content pipeline with brand guidelines, schema markup, internal linking, and direct Webflow publishing.
+
+## Who it's for
+
+- AI agents that need to know what content to create before generating it
+- Content teams and agencies planning at scale
+- SEO professionals who need AI citation intelligence
+- Developers building content workflows via API
+
+## Links
+
+- Website: https://agenticpencil.com
+- API Docs: https://agenticpencil.com/docs
