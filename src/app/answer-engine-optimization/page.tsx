@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ContentPageFaq from "@/components/ContentPageFaq";
+import CtaButton from "@/components/CtaButton";
 
 export const metadata: Metadata = {
   title: "Answer Engine Optimization (AEO) — AI Visibility Intelligence | AgenticPencil",
@@ -202,9 +203,7 @@ export default function AnswerEngineOptimizationPage() {
             strategy.
           </p>
           <div className="content-page-cta">
-            <Link href="/" className="btn-primary">
-              Get your AI visibility score &rarr;
-            </Link>
+            <CtaButton>Get your AI visibility score &rarr;</CtaButton>
           </div>
         </section>
 

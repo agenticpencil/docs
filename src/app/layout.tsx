@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Instrument_Serif, DM_Sans, JetBrains_Mono } from "next/font/google";
+import WaitlistProvider from "@/components/WaitlistProvider";
 import "./globals.css";
 
 const instrumentSerif = Instrument_Serif({
@@ -93,7 +94,7 @@ export default function RootLayout({
           overflowX: "hidden",
         }}
       >
-        {children}
+        <WaitlistProvider>{children}</WaitlistProvider>
       </body>
     </html>
   );

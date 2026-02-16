@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ContentPageFaq from "@/components/ContentPageFaq";
+import CtaButton from "@/components/CtaButton";
 
 export const metadata: Metadata = {
   title: "MCP Server for SEO — Agentic SEO Intelligence | AgenticPencil",
@@ -236,9 +237,7 @@ export default function McpServerSeoPage() {
             100 free API calls included.
           </p>
           <div className="content-page-cta">
-            <Link href="/" className="btn-primary">
-              Get API Key &mdash; Free &rarr;
-            </Link>
+            <CtaButton>Get API Key &mdash; Free &rarr;</CtaButton>
           </div>
         </section>
 

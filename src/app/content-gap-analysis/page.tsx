@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ContentPageFaq from "@/components/ContentPageFaq";
+import CtaButton from "@/components/CtaButton";
 
 export const metadata: Metadata = {
   title: "Content Gap Analysis — Find What's Missing in Your Strategy | AgenticPencil",
@@ -197,9 +198,7 @@ export default function ContentGapAnalysisPage() {
             to take, and estimated impact.
           </p>
           <div className="content-page-cta">
-            <Link href="/" className="btn-primary">
-              Run your content gap analysis &rarr;
-            </Link>
+            <CtaButton>Run your content gap analysis &rarr;</CtaButton>
           </div>
         </section>
 

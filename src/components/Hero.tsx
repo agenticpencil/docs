@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useWaitlist } from "./WaitlistProvider";
 
 export default function Hero() {
   const [loaded, setLoaded] = useState(false);
+  const { openModal } = useWaitlist();
 
   useEffect(() => {
     setTimeout(() => setLoaded(true), 100);
@@ -50,8 +52,12 @@ export default function Hero() {
           transition: "opacity 0.6s ease 0.9s",
         }}
       >
-        <button className="btn-primary">Get Started Free &rarr;</button>
-        <button className="btn-secondary">View API Docs</button>
+        <button className="btn-primary" onClick={openModal}>
+          Get Started Free &rarr;
+        </button>
+        <button className="btn-secondary" onClick={openModal}>
+          View API Docs
+        </button>
       </div>
       <p
         className="hero-note"

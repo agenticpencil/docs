@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ContentPageFaq from "@/components/ContentPageFaq";
+import CtaButton from "@/components/CtaButton";
 
 export const metadata: Metadata = {
   title: "AI SEO Tool — Content Mapping & Visibility Intelligence | AgenticPencil",
@@ -195,9 +196,7 @@ export default function AiSeoToolPage() {
             visibility score in seconds.
           </p>
           <div className="content-page-cta">
-            <Link href="/" className="btn-primary">
-              Get Started Free &rarr;
-            </Link>
+            <CtaButton>Get Started Free &rarr;</CtaButton>
           </div>
         </section>
 

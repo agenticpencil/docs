@@ -1,4 +1,5 @@
 import FadeIn from "./FadeIn";
+import CtaButton from "./CtaButton";
 
 export default function FinalCta() {
   return (
@@ -9,12 +10,12 @@ export default function FinalCta() {
           The content strategy API for agents, teams, and agencies who are done
           guessing.
         </p>
-        <button
+        <CtaButton
           className="btn-primary"
           style={{ fontSize: 15, padding: "16px 40px" }}
         >
           Get API Key &mdash; Free &rarr;
-        </button>
+        </CtaButton>
       </FadeIn>
     </section>
   );

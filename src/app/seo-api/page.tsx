@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ContentPageFaq from "@/components/ContentPageFaq";
+import CtaButton from "@/components/CtaButton";
 
 export const metadata: Metadata = {
   title: "SEO API — Content Strategy & Audit API for Developers | AgenticPencil",
@@ -222,9 +223,7 @@ export default function SeoApiPage() {
             get your first content map in seconds.
           </p>
           <div className="content-page-cta">
-            <Link href="/" className="btn-primary">
-              Get API Key &mdash; Free &rarr;
-            </Link>
+            <CtaButton>Get API Key &mdash; Free &rarr;</CtaButton>
           </div>
         </section>
 
