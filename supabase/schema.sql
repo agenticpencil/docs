@@ -55,7 +55,7 @@ create table if not exists public.cached_results (
   created_at timestamptz not null default now()
 );
 
-create index idx_cached_results_key on public.cached_results(cache_key) where expires_at > now();
+create index idx_cached_results_key on public.cached_results(cache_key);
 
 -- ─── Rate Limiting ───────────────────────────────────────
 create table if not exists public.rate_limits (

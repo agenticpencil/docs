@@ -73,9 +73,4 @@ app.onError((err, c) => {
   }, 500);
 });
 
-// For local dev
-if (process.env.NODE_ENV !== 'production') {
-  const { serve } = require('@hono/node-server');
-  serve({ fetch: app.fetch, port: 3001 });
-  console.log('🖊️  AgenticPencil API running on http://localhost:3001');
-}
+export default app;

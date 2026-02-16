@@ -1,5 +1,5 @@
 import { Context, Next } from 'hono';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import { getSupabase } from '../lib/supabase';
 import type { Env } from '../index';
 

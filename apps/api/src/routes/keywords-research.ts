@@ -1,7 +1,7 @@
 import { Context } from 'hono';
 import { getKeywordsForSite, getKeywordSuggestions, KeywordData } from '../lib/dataforseo';
 import { getSupabase } from '../lib/supabase';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import type { Env } from '../index';
 
 interface RequestBody {
