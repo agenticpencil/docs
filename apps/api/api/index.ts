@@ -193,6 +193,7 @@ app.post('/v1/billing/checkout', authMiddleware, async (c) => {
   const priceInfo = prices[plan];
   if (!priceInfo) return c.json({ success: false, error: { code: 'INVALID_PLAN', message: 'Plan must be "pro" or "scale"' } }, 400);
 
+  try {
   const db = getSupabase();
   const { data: profile } = await db.from('profiles').select('email, stripe_customer_id').eq('id', c.get('userId')).single();
 
@@ -221,6 +222,9 @@ app.post('/v1/billing/checkout', authMiddleware, async (c) => {
   });
 
   return c.json({ success: true, data: { checkout_url: session.url, plan, price: `$${priceInfo.amount / 100}/month` } });
+} catch (err: any) {
+  return c.json({ success: false, error: { code: 'BILLING_ERROR', message: err?.message || 'Stripe error', type: err?.type } }, 500);
+}
 });
 
 // ─── Stripe Webhook ─────────────────────────────────────
