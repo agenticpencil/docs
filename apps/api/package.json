@@ -1,16 +1,16 @@
 {
-  "name": "@agenticpencil/api",
+  "name": "agenticpencil-api",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "dev": "tsx watch src/dev.ts",
-    "build": "echo 'Vercel handles build'",
+    "build": "echo 'build ok'",
     "test": "vitest run"
   },
   "dependencies": {
     "hono": "^4.7.0",
-    "@hono/node-server": "^1.13.0",
-    "@supabase/supabase-js": "^2.49.0"
+    "@supabase/supabase-js": "^2.49.0",
+    "stripe": "^17.0.0"
   },
   "devDependencies": {
     "typescript": "^5.7.0",

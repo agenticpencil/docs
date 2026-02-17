@@ -6,11 +6,8 @@
     "strict": true,
     "esModuleInterop": true,
     "outDir": "./dist",
-    "rootDir": "./src",
-    "types": ["node"],
-    "paths": {
-      "@agenticpencil/shared": ["../../packages/shared/src"]
-    }
+    "rootDir": ".",
+    "types": ["node"]
   },
-  "include": ["src/**/*"]
+  "include": ["api/**/*", "src/**/*"]
 }
