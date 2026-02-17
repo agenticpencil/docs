@@ -1,6 +1,6 @@
 {
   "installCommand": "npm install --prefix .",
   "buildCommand": "echo ok",
-  "framework": null,
+  "outputDirectory": "public",
   "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
 }
