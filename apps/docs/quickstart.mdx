@@ -1,0 +1,207 @@
+---
+title: 'Quickstart'
+description: 'Get started with AgenticPencil API in under 5 minutes'
+---
+
+## Get Your API Key
+
+First, you'll need to get your API key from the AgenticPencil platform:
+
+<Steps>
+  <Step title="Sign Up">
+    Visit [platform.agenticpencil.com](https://platform.agenticpencil.com) and create your account
+  </Step>
+  <Step title="Verify Email">
+    Check your inbox and verify your email address
+  </Step>
+  <Step title="Generate API Key">
+    Navigate to the API Keys section and generate your first key
+  </Step>
+</Steps>
+
+Your API key will start with `ap_` and look like this: `ap_1234567890abcdef`
+
+<Warning>
+  Keep your API key secure! Never expose it in client-side code or public repositories.
+</Warning>
+
+## Make Your First API Call
+
+Let's start with a simple keyword research request to get you familiar with the API:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://api.agenticpencil.com/v1/keywords/research" \
+  -H "Authorization: Bearer ap_your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "domain": "example.com",
+    "topic": "sustainable fashion",
+    "country": "US",
+    "limit": 10
+  }'
+```
+
+```python Python
+import requests
+
+url = "https://api.agenticpencil.com/v1/keywords/research"
+headers = {
+    "Authorization": "Bearer ap_your_api_key_here",
+    "Content-Type": "application/json"
+}
+data = {
+    "domain": "example.com",
+    "topic": "sustainable fashion",
+    "country": "US",
+    "limit": 10
+}
+
+response = requests.post(url, headers=headers, json=data)
+result = response.json()
+print(result)
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const response = await axios.post(
+  'https://api.agenticpencil.com/v1/keywords/research',
+  {
+    domain: 'example.com',
+    topic: 'sustainable fashion',
+    country: 'US',
+    limit: 10
+  },
+  {
+    headers: {
+      'Authorization': 'Bearer ap_your_api_key_here',
+      'Content-Type': 'application/json'
+    }
+  }
+);
+
+console.log(response.data);
+```
+
+</CodeGroup>
+
+## Understanding the Response
+
+You'll receive a structured response with keyword opportunities:
+
+```json Example Response
+{
+  "status": "success",
+  "data": {
+    "keywords": [
+      {
+        "keyword": "eco-friendly clothing brands",
+        "search_volume": 12000,
+        "competition": "medium",
+        "cpc": 1.25,
+        "trend": "increasing",
+        "difficulty": 45,
+        "opportunity_score": 78
+      },
+      {
+        "keyword": "sustainable fashion tips",
+        "search_volume": 8500,
+        "competition": "low",
+        "cpc": 0.85,
+        "trend": "stable",
+        "difficulty": 32,
+        "opportunity_score": 82
+      }
+    ],
+    "total_found": 10,
+    "credits_used": 5
+  },
+  "credits_remaining": 45
+}
+```
+
+## Key Response Fields
+
+<ResponseField name="keyword" type="string">
+  The keyword phrase
+</ResponseField>
+
+<ResponseField name="search_volume" type="number">
+  Monthly search volume
+</ResponseField>
+
+<ResponseField name="competition" type="string">
+  Competition level: low, medium, or high
+</ResponseField>
+
+<ResponseField name="opportunity_score" type="number">
+  AgenticPencil's proprietary opportunity score (1-100, higher is better)
+</ResponseField>
+
+<ResponseField name="credits_used" type="number">
+  Number of credits consumed by this request
+</ResponseField>
+
+## Next Steps
+
+Now that you've made your first successful API call, explore these powerful features:
+
+<CardGroup cols={2}>
+  <Card
+    title="Content Gap Analysis"
+    icon="search"
+    href="/api-reference/keywords-gaps"
+  >
+    Find keywords your competitors rank for but you don't
+  </Card>
+  <Card
+    title="Content Audit"
+    icon="chart-bar"
+    href="/api-reference/content-audit"
+  >
+    Analyze your existing content performance
+  </Card>
+  <Card
+    title="Content Recommendations"
+    icon="lightbulb"
+    href="/api-reference/content-recommend"
+  >
+    Get AI-powered content strategy suggestions
+  </Card>
+  <Card
+    title="Usage Tracking"
+    icon="chart-line"
+    href="/api-reference/usage"
+  >
+    Monitor your API usage and credit consumption
+  </Card>
+</CardGroup>
+
+## Error Handling
+
+Always check the response status and handle errors gracefully:
+
+```python Error Handling Example
+import requests
+
+try:
+    response = requests.post(url, headers=headers, json=data)
+    response.raise_for_status()  # Raises an HTTPError for bad responses
+    
+    result = response.json()
+    if result.get('status') == 'success':
+        # Process successful response
+        keywords = result['data']['keywords']
+    else:
+        # Handle API-level errors
+        print(f"API Error: {result.get('error', 'Unknown error')}")
+        
+except requests.exceptions.RequestException as e:
+    print(f"Request failed: {e}")
+```
+
+<Tip>
+  Start with small requests to understand the API structure, then scale up as you build confidence with the responses.
+</Tip>

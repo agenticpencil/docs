@@ -1,0 +1,439 @@
+---
+title: "Content Recommendations"
+api: "POST https://api.agenticpencil.com/v1/content/recommend"
+description: "Get AI-powered content strategy suggestions based on your domain and goals"
+---
+
+Generate strategic content recommendations tailored to your domain, business goals, and existing content landscape using our AI-powered analysis engine.
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "https://api.agenticpencil.com/v1/content/recommend" \
+  -H "Authorization: Bearer ap_your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "domain": "yoursite.com",
+    "goals": [
+      "increase organic traffic",
+      "improve conversion rates",
+      "build brand authority"
+    ],
+    "existing_content": "We have 50+ blog posts about sustainable fashion, focusing on trends and tips. Looking to expand into new areas."
+  }'
+```
+
+```python Python
+import requests
+
+url = "https://api.agenticpencil.com/v1/content/recommend"
+headers = {
+    "Authorization": "Bearer ap_your_api_key_here",
+    "Content-Type": "application/json"
+}
+data = {
+    "domain": "yoursite.com",
+    "goals": [
+        "increase organic traffic",
+        "improve conversion rates",
+        "build brand authority"
+    ],
+    "existing_content": "We have 50+ blog posts about sustainable fashion, focusing on trends and tips. Looking to expand into new areas."
+}
+
+response = requests.post(url, headers=headers, json=data)
+result = response.json()
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const response = await axios.post(
+  'https://api.agenticpencil.com/v1/content/recommend',
+  {
+    domain: 'yoursite.com',
+    goals: [
+      'increase organic traffic',
+      'improve conversion rates',
+      'build brand authority'
+    ],
+    existing_content: 'We have 50+ blog posts about sustainable fashion, focusing on trends and tips. Looking to expand into new areas.'
+  },
+  {
+    headers: {
+      'Authorization': 'Bearer ap_your_api_key_here',
+      'Content-Type': 'application/json'
+    }
+  }
+);
+```
+
+</RequestExample>
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token using your AgenticPencil API key
+</ParamField>
+
+## Request Body
+
+<ParamField body="domain" type="string" required>
+  Your website domain (e.g., "yoursite.com")
+</ParamField>
+
+<ParamField body="goals" type="array" required>
+  Your content marketing goals (e.g., "increase organic traffic", "improve conversions", "build authority")
+</ParamField>
+
+<ParamField body="existing_content" type="string">
+  Description of your current content landscape and what you're looking to achieve
+</ParamField>
+
+## Response
+
+<ResponseField name="status" type="string">
+  Status of the request ("success" or "error")
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="data object">
+    <ResponseField name="recommendations" type="array">
+      Array of strategic content recommendations
+      <Expandable title="recommendation object">
+        <ResponseField name="title" type="string">
+          Suggested content title/topic
+        </ResponseField>
+        <ResponseField name="content_type" type="string">
+          Recommended format: "blog post", "guide", "case study", "infographic", etc.
+        </ResponseField>
+        <ResponseField name="primary_keyword" type="string">
+          Main keyword to target
+        </ResponseField>
+        <ResponseField name="target_keywords" type="array">
+          Additional keywords to include in the content
+        </ResponseField>
+        <ResponseField name="search_volume_potential" type="integer">
+          Combined monthly search volume for all target keywords
+        </ResponseField>
+        <ResponseField name="competition_level" type="string">
+          Expected competition: "low", "medium", "high"
+        </ResponseField>
+        <ResponseField name="content_outline" type="array">
+          Suggested content structure and key points to cover
+        </ResponseField>
+        <ResponseField name="goals_alignment" type="array">
+          Which of your stated goals this content addresses
+        </ResponseField>
+        <ResponseField name="priority_score" type="integer">
+          Recommendation priority (1-100, higher is better)
+        </ResponseField>
+        <ResponseField name="estimated_effort" type="string">
+          Expected creation effort: "low", "medium", "high"
+        </ResponseField>
+        <ResponseField name="success_metrics" type="array">
+          Suggested KPIs to track for this content
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="content_strategy" type="object">
+      <Expandable title="content_strategy object">
+        <ResponseField name="content_pillars" type="array">
+          Recommended content themes/pillars for your domain
+        </ResponseField>
+        <ResponseField name="content_calendar_suggestions" type="object">
+          <Expandable title="calendar suggestions">
+            <ResponseField name="publishing_frequency" type="string">
+              Recommended posting schedule
+            </ResponseField>
+            <ResponseField name="content_mix" type="object">
+              Suggested distribution of content types
+            </ResponseField>
+            <ResponseField name="seasonal_opportunities" type="array">
+              Time-sensitive content opportunities
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+        <ResponseField name="internal_linking_strategy" type="array">
+          Suggestions for connecting new content with existing pages
+        </ResponseField>
+        <ResponseField name="distribution_channels" type="array">
+          Recommended channels for content promotion
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="competitive_insights" type="object">
+      <Expandable title="competitive_insights object">
+        <ResponseField name="content_gaps" type="array">
+          Topics competitors cover that you don't
+        </ResponseField>
+        <ResponseField name="content_opportunities" type="array">
+          Areas where you can outperform competitors
+        </ResponseField>
+        <ResponseField name="unique_angles" type="array">
+          Distinctive perspectives you can bring to common topics
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="credits_used" type="integer">
+      Number of credits consumed by this request
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="credits_remaining" type="integer">
+  Your remaining credit balance
+</ResponseField>
+
+<ResponseExample>
+
+```json Success Response
+{
+  "status": "success",
+  "data": {
+    "recommendations": [
+      {
+        "title": "The Complete Guide to Building a Capsule Wardrobe with Sustainable Fashion",
+        "content_type": "comprehensive guide",
+        "primary_keyword": "sustainable capsule wardrobe",
+        "target_keywords": [
+          "eco friendly capsule wardrobe",
+          "minimalist sustainable fashion",
+          "ethical wardrobe essentials",
+          "sustainable fashion capsule"
+        ],
+        "search_volume_potential": 15600,
+        "competition_level": "medium",
+        "content_outline": [
+          "Introduction to capsule wardrobes and sustainability",
+          "Essential pieces for a sustainable capsule wardrobe",
+          "How to choose quality over quantity",
+          "Sustainable brands for each wardrobe category",
+          "Maintenance and care tips for longevity",
+          "Cost analysis: investment vs fast fashion"
+        ],
+        "goals_alignment": [
+          "increase organic traffic",
+          "build brand authority"
+        ],
+        "priority_score": 92,
+        "estimated_effort": "high",
+        "success_metrics": [
+          "organic traffic growth",
+          "time on page",
+          "social shares",
+          "email signups"
+        ]
+      },
+      {
+        "title": "Sustainable Fashion on a Budget: 20 Tips That Actually Work",
+        "content_type": "listicle",
+        "primary_keyword": "sustainable fashion budget",
+        "target_keywords": [
+          "affordable sustainable fashion",
+          "eco fashion on budget",
+          "cheap sustainable clothing"
+        ],
+        "search_volume_potential": 8900,
+        "competition_level": "low",
+        "content_outline": [
+          "Myth-busting: sustainable fashion doesn't have to be expensive",
+          "Thrift shopping strategies",
+          "Clothing swap and rental options",
+          "Care and repair techniques",
+          "Budget-friendly sustainable brands",
+          "DIY upcycling ideas"
+        ],
+        "goals_alignment": [
+          "increase organic traffic",
+          "improve conversion rates"
+        ],
+        "priority_score": 85,
+        "estimated_effort": "medium",
+        "success_metrics": [
+          "click-through rate",
+          "conversion to email list",
+          "social engagement"
+        ]
+      }
+    ],
+    "content_strategy": {
+      "content_pillars": [
+        "Sustainable Fashion Education",
+        "Practical Style Tips",
+        "Brand Reviews & Recommendations",
+        "Industry News & Trends"
+      ],
+      "content_calendar_suggestions": {
+        "publishing_frequency": "2-3 posts per week",
+        "content_mix": {
+          "educational_guides": 40,
+          "product_reviews": 25,
+          "trend_analysis": 20,
+          "personal_stories": 15
+        },
+        "seasonal_opportunities": [
+          "Earth Day sustainable fashion roundup (April)",
+          "Back-to-school ethical wardrobe (August)",
+          "Holiday gift guide - sustainable fashion (November)"
+        ]
+      },
+      "internal_linking_strategy": [
+        "Link new guides to existing trend posts",
+        "Create topic clusters around sustainability themes",
+        "Connect brand reviews to general advice content"
+      ],
+      "distribution_channels": [
+        "Pinterest (visual content)",
+        "Instagram (behind-the-scenes)",
+        "LinkedIn (industry insights)",
+        "Email newsletter (exclusive tips)"
+      ]
+    },
+    "competitive_insights": {
+      "content_gaps": [
+        "Sustainable fashion for men",
+        "Plus-size sustainable fashion",
+        "Sustainable fashion technology"
+      ],
+      "content_opportunities": [
+        "More in-depth brand analysis",
+        "Regional/local sustainable fashion focus",
+        "Scientific approach to sustainability claims"
+      ],
+      "unique_angles": [
+        "Budget-focused approach to sustainability",
+        "Practical tips over theoretical concepts",
+        "Real people, real stories approach"
+      ]
+    },
+    "credits_used": 10
+  },
+  "credits_remaining": 240
+}
+```
+
+```json Error Response
+{
+  "status": "error",
+  "error": "Invalid goals format",
+  "message": "Goals must be provided as an array of strings",
+  "code": "INVALID_GOALS_FORMAT"
+}
+```
+
+</ResponseExample>
+
+## Credit Cost
+
+<Info>
+  **Credit Cost**: 10 credits per request
+</Info>
+
+This endpoint consumes 10 credits per request for comprehensive AI-powered content strategy recommendations.
+
+## Goal Types
+
+Common content marketing goals you can specify:
+
+<CardGroup cols={2}>
+  <Card
+    title="Traffic Goals"
+    icon="chart-line"
+  >
+    - "increase organic traffic"
+    - "improve search visibility"
+    - "boost website visits"
+  </Card>
+  <Card
+    title="Conversion Goals"
+    icon="target"
+  >
+    - "improve conversion rates"
+    - "generate more leads"
+    - "increase email signups"
+  </Card>
+  <Card
+    title="Authority Goals"
+    icon="crown"
+  >
+    - "build brand authority"
+    - "establish thought leadership"
+    - "improve domain authority"
+  </Card>
+  <Card
+    title="Engagement Goals"
+    icon="heart"
+  >
+    - "increase social engagement"
+    - "improve user engagement"
+    - "build community"
+  </Card>
+</CardGroup>
+
+## Priority Score Guide
+
+<AccordionGroup>
+  <Accordion title="90-100: Extremely High Priority">
+    **Must-create content** with exceptional potential for achieving your goals. These recommendations typically have high search volume, low competition, and perfect alignment with your objectives.
+  </Accordion>
+
+  <Accordion title="75-89: High Priority">
+    **Strong recommendations** that align well with your goals and have good potential for success. Should be prioritized in your content calendar.
+  </Accordion>
+
+  <Accordion title="60-74: Medium Priority">
+    **Solid content ideas** that support your goals but may have higher competition or lower search volume. Good for filling out your content calendar.
+  </Accordion>
+
+  <Accordion title="Below 60: Lower Priority">
+    **Supplementary content** that supports your overall strategy but shouldn't be prioritized over higher-scoring recommendations.
+  </Accordion>
+</AccordionGroup>
+
+## Use Cases
+
+<CardGroup cols={2}>
+  <Card
+    title="Content Planning"
+    icon="calendar"
+  >
+    Generate data-driven content ideas for your editorial calendar
+  </Card>
+  <Card
+    title="Strategy Development"
+    icon="chess"
+  >
+    Build comprehensive content strategies aligned with business goals
+  </Card>
+  <Card
+    title="Gap Analysis"
+    icon="search"
+  >
+    Identify content opportunities you're missing in your niche
+  </Card>
+  <Card
+    title="Competitive Advantage"
+    icon="trophy"
+  >
+    Find unique angles and opportunities your competitors are missing
+  </Card>
+</CardGroup>
+
+## Best Practices
+
+<Tip>
+  **Be Specific**: The more detailed your existing content description and goals, the more targeted and useful your recommendations will be.
+</Tip>
+
+<Tip>
+  **Balance Effort and Impact**: Use the priority score and estimated effort to create a balanced content calendar that maximizes ROI.
+</Tip>
+
+<Tip>
+  **Implement the Strategy**: Don't just focus on individual recommendations - use the content strategy and competitive insights to guide your overall approach.
+</Tip>
+
+<Warning>
+  Content recommendations are based on current data and trends. Market conditions and competition can change, so refresh your recommendations every 3-6 months.
+</Warning>

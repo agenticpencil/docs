@@ -1,0 +1,413 @@
+---
+title: 'Rate Limits'
+description: 'Understand AgenticPencil API rate limits and how to work within them'
+---
+
+## Overview
+
+AgenticPencil enforces rate limits to ensure fair usage and optimal performance for all users. Rate limits are applied per API key and reset every minute.
+
+## Rate Limits by Plan
+
+<CardGroup cols={2}>
+  <Card
+    title="Free Plan"
+    icon="turtle"
+    iconType="duotone"
+  >
+    **10 requests per minute**
+    
+    Perfect for development and small-scale testing
+  </Card>
+  <Card
+    title="Pro Plan"
+    icon="rabbit"
+    iconType="duotone"
+  >
+    **60 requests per minute**
+    
+    Ideal for production applications with moderate traffic
+  </Card>
+  <Card
+    title="Scale Plan"
+    icon="horse"
+    iconType="duotone"
+  >
+    **120 requests per minute**
+    
+    Built for high-volume applications and intensive workflows
+  </Card>
+  <Card
+    title="Enterprise Plan"
+    icon="rocket"
+    iconType="duotone"
+  >
+    **300 requests per minute**
+    
+    Custom limits available for enterprise needs
+  </Card>
+</CardGroup>
+
+## How Rate Limits Work
+
+<AccordionGroup>
+  <Accordion title="Sliding Window Algorithm">
+    AgenticPencil uses a sliding window approach for rate limiting:
+    - Your rate limit counter tracks requests made in the past 60 seconds
+    - As time passes, older requests "fall off" the window
+    - This provides smoother request distribution compared to fixed windows
+  </Accordion>
+
+  <Accordion title="Per API Key Enforcement">
+    - Each API key has its own independent rate limit
+    - Multiple API keys on the same account share the same per-key limits
+    - Team members with separate API keys don't affect each other's limits
+  </Accordion>
+
+  <Accordion title="Reset Behavior">
+    - Rate limits continuously reset as the sliding window moves
+    - No specific "reset time" - it's constantly updating
+    - If you hit your limit, you can make requests again as soon as older requests age out
+  </Accordion>
+</AccordionGroup>
+
+## Rate Limit Headers
+
+Every API response includes rate limit information in the headers:
+
+```bash Response Headers
+HTTP/1.1 200 OK
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 45
+X-RateLimit-Reset: 1708185600
+X-RateLimit-Used: 15
+```
+
+<ResponseField name="X-RateLimit-Limit" type="integer">
+  Your current rate limit (requests per minute)
+</ResponseField>
+
+<ResponseField name="X-RateLimit-Remaining" type="integer">
+  Number of requests remaining in the current window
+</ResponseField>
+
+<ResponseField name="X-RateLimit-Reset" type="timestamp">
+  Unix timestamp when the oldest request in your window will age out
+</ResponseField>
+
+<ResponseField name="X-RateLimit-Used" type="integer">
+  Number of requests used in the current window
+</ResponseField>
+
+## Rate Limit Exceeded Response
+
+When you exceed your rate limit, you'll receive a `429 Too Many Requests` response:
+
+```json Rate Limit Error
+{
+  "status": "error",
+  "error": "Rate limit exceeded",
+  "message": "You have exceeded your rate limit of 60 requests per minute. Please try again in 23 seconds.",
+  "code": "RATE_LIMIT_EXCEEDED",
+  "retry_after": 23
+}
+```
+
+<ResponseField name="retry_after" type="integer">
+  Seconds to wait before making another request
+</ResponseField>
+
+## Best Practices
+
+### 1. Monitor Rate Limit Headers
+
+Always check the rate limit headers in your responses:
+
+<CodeGroup>
+
+```python Python
+import requests
+import time
+
+def make_request_with_rate_limiting(url, headers, data):
+    response = requests.post(url, headers=headers, json=data)
+    
+    # Check rate limit headers
+    remaining = int(response.headers.get('X-RateLimit-Remaining', 0))
+    limit = int(response.headers.get('X-RateLimit-Limit', 0))
+    
+    if remaining <= 5:  # Warning when close to limit
+        print(f"⚠️  Rate limit warning: {remaining}/{limit} requests remaining")
+    
+    return response
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+async function makeRequestWithRateLimiting(url, config) {
+  try {
+    const response = await axios.post(url, config.data, {
+      headers: config.headers
+    });
+    
+    const remaining = parseInt(response.headers['x-ratelimit-remaining']);
+    const limit = parseInt(response.headers['x-ratelimit-limit']);
+    
+    if (remaining <= 5) {
+      console.warn(`⚠️  Rate limit warning: ${remaining}/${limit} requests remaining`);
+    }
+    
+    return response;
+  } catch (error) {
+    if (error.response?.status === 429) {
+      const retryAfter = parseInt(error.response.headers['retry-after']);
+      console.log(`Rate limited. Retry after ${retryAfter} seconds`);
+    }
+    throw error;
+  }
+}
+```
+
+</CodeGroup>
+
+### 2. Implement Exponential Backoff
+
+When you hit rate limits, use exponential backoff to retry requests:
+
+<CodeGroup>
+
+```python Python
+import requests
+import time
+import random
+
+def make_request_with_backoff(url, headers, data, max_retries=3):
+    for attempt in range(max_retries + 1):
+        try:
+            response = requests.post(url, headers=headers, json=data)
+            
+            if response.status_code == 429:
+                if attempt == max_retries:
+                    raise Exception("Max retries exceeded")
+                
+                # Exponential backoff with jitter
+                delay = (2 ** attempt) + random.uniform(0, 1)
+                print(f"Rate limited. Retrying in {delay:.1f} seconds...")
+                time.sleep(delay)
+                continue
+                
+            return response
+            
+        except requests.RequestException as e:
+            if attempt == max_retries:
+                raise e
+            time.sleep(2 ** attempt)
+            
+    return None
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+async function makeRequestWithBackoff(url, config, maxRetries = 3) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await axios.post(url, config.data, {
+        headers: config.headers
+      });
+      return response;
+      
+    } catch (error) {
+      if (error.response?.status === 429 && attempt < maxRetries) {
+        // Exponential backoff with jitter
+        const delay = (2 ** attempt * 1000) + Math.random() * 1000;
+        console.log(`Rate limited. Retrying in ${delay/1000:.1f} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
+      }
+      
+      if (attempt === maxRetries) {
+        throw error;
+      }
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+### 3. Batch and Queue Requests
+
+For high-volume applications, implement request queuing:
+
+```python Python Request Queue
+import asyncio
+from asyncio import Queue
+import aiohttp
+
+class AgenticPencilClient:
+    def __init__(self, api_key, rate_limit=60):
+        self.api_key = api_key
+        self.rate_limit = rate_limit
+        self.request_queue = Queue()
+        self.semaphore = asyncio.Semaphore(rate_limit)
+        
+    async def add_request(self, endpoint, data):
+        await self.request_queue.put((endpoint, data))
+        
+    async def process_queue(self):
+        while True:
+            try:
+                endpoint, data = await asyncio.wait_for(
+                    self.request_queue.get(), timeout=1.0
+                )
+                
+                async with self.semaphore:
+                    await self.make_request(endpoint, data)
+                    # Release semaphore after 60 seconds (rate limit window)
+                    asyncio.create_task(self.release_semaphore_later())
+                    
+            except asyncio.TimeoutError:
+                continue
+                
+    async def release_semaphore_later(self):
+        await asyncio.sleep(60)
+        # Semaphore automatically releases when context exits
+        
+    async def make_request(self, endpoint, data):
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                f"https://api.agenticpencil.com/v1/{endpoint}",
+                json=data,
+                headers=headers
+            ) as response:
+                return await response.json()
+```
+
+### 4. Use Multiple API Keys
+
+For maximum throughput, create multiple API keys:
+
+<CardGroup cols={2}>
+  <Card
+    title="Load Distribution"
+    icon="balance-scale"
+  >
+    Distribute requests across multiple API keys to multiply your effective rate limit
+  </Card>
+  <Card
+    title="Fault Tolerance"
+    icon="shield"
+  >
+    If one key gets rate limited, others can continue processing
+  </Card>
+  <Card
+    title="Team Separation"
+    icon="users"
+  >
+    Give different team members or services their own keys
+  </Card>
+  <Card
+    title="Environment Isolation"
+    icon="code-branch"
+  >
+    Use separate keys for development, staging, and production
+  </Card>
+</CardGroup>
+
+## Rate Limit Optimization Strategies
+
+<AccordionGroup>
+  <Accordion title="Batch Similar Requests">
+    Instead of making multiple keyword research requests with low limits, make fewer requests with higher limits:
+    
+    **Less Efficient:**
+    - 10 requests with limit=10 each = 10 API calls
+    
+    **More Efficient:**
+    - 1 request with limit=100 = 1 API call
+  </Accordion>
+
+  <Accordion title="Cache Results">
+    Store API responses locally to avoid repeated requests for the same data:
+    - Cache keyword research results for 24-48 hours
+    - Cache content audits for 7-14 days
+    - Cache usage data for 1 hour
+  </Accordion>
+
+  <Accordion title="Request Prioritization">
+    Prioritize critical requests during high-traffic periods:
+    - Real-time user requests get priority
+    - Background analytics can be delayed
+    - Batch processing during off-peak hours
+  </Accordion>
+
+  <Accordion title="Precompute Data">
+    For predictable use cases, precompute and store results:
+    - Daily content audits during low-traffic hours
+    - Weekly competitive analysis batches
+    - Monthly comprehensive keyword research
+  </Accordion>
+</AccordionGroup>
+
+## Monitoring Rate Limits
+
+Track your rate limit usage to optimize performance:
+
+<CodeGroup>
+
+```python Python Monitoring
+import requests
+from datetime import datetime, timedelta
+import json
+
+class RateLimitMonitor:
+    def __init__(self, api_key):
+        self.api_key = api_key
+        self.request_log = []
+        
+    def log_request(self, response):
+        timestamp = datetime.now()
+        rate_limit_data = {
+            'timestamp': timestamp.isoformat(),
+            'limit': int(response.headers.get('X-RateLimit-Limit', 0)),
+            'remaining': int(response.headers.get('X-RateLimit-Remaining', 0)),
+            'used': int(response.headers.get('X-RateLimit-Used', 0))
+        }
+        self.request_log.append(rate_limit_data)
+        
+        # Keep only last hour of data
+        cutoff = timestamp - timedelta(hours=1)
+        self.request_log = [
+            log for log in self.request_log 
+            if datetime.fromisoformat(log['timestamp']) > cutoff
+        ]
+        
+    def get_usage_stats(self):
+        if not self.request_log:
+            return None
+            
+        recent_log = self.request_log[-1]
+        return {
+            'current_limit': recent_log['limit'],
+            'current_remaining': recent_log['remaining'],
+            'requests_last_hour': len(self.request_log),
+            'utilization_rate': (recent_log['used'] / recent_log['limit']) * 100
+        }
+```
+
+</CodeGroup>
+
+<Warning>
+  **Don't ignore rate limits!** Repeatedly exceeding limits may result in temporary API key suspension.
+</Warning>
+
+<Tip>
+  **Upgrade when needed**: If you consistently hit rate limits, consider upgrading to a higher plan rather than implementing complex workarounds.
+</Tip>

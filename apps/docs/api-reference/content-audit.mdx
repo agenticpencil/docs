@@ -1,0 +1,361 @@
+---
+title: "Content Audit"
+api: "POST https://api.agenticpencil.com/v1/content/audit"
+description: "Analyze your existing content performance and discover optimization opportunities"
+---
+
+Perform a comprehensive audit of your website's content to identify high-performing pages, underperforming content, and optimization opportunities.
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "https://api.agenticpencil.com/v1/content/audit" \
+  -H "Authorization: Bearer ap_your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "domain": "yoursite.com",
+    "sitemap_url": "https://yoursite.com/sitemap.xml",
+    "max_pages": 100
+  }'
+```
+
+```python Python
+import requests
+
+url = "https://api.agenticpencil.com/v1/content/audit"
+headers = {
+    "Authorization": "Bearer ap_your_api_key_here",
+    "Content-Type": "application/json"
+}
+data = {
+    "domain": "yoursite.com",
+    "sitemap_url": "https://yoursite.com/sitemap.xml",
+    "max_pages": 100
+}
+
+response = requests.post(url, headers=headers, json=data)
+result = response.json()
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const response = await axios.post(
+  'https://api.agenticpencil.com/v1/content/audit',
+  {
+    domain: 'yoursite.com',
+    sitemap_url: 'https://yoursite.com/sitemap.xml',
+    max_pages: 100
+  },
+  {
+    headers: {
+      'Authorization': 'Bearer ap_your_api_key_here',
+      'Content-Type': 'application/json'
+    }
+  }
+);
+```
+
+</RequestExample>
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token using your AgenticPencil API key
+</ParamField>
+
+## Request Body
+
+<ParamField body="domain" type="string" required>
+  Your website domain (e.g., "yoursite.com")
+</ParamField>
+
+<ParamField body="sitemap_url" type="string">
+  URL to your XML sitemap (if not provided, we'll attempt to find it automatically)
+</ParamField>
+
+<ParamField body="max_pages" type="integer">
+  Maximum number of pages to audit (1-500, default: 100)
+</ParamField>
+
+## Response
+
+<ResponseField name="status" type="string">
+  Status of the request ("success" or "error")
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="data object">
+    <ResponseField name="audit_summary" type="object">
+      <Expandable title="audit_summary object">
+        <ResponseField name="total_pages_analyzed" type="integer">
+          Number of pages successfully analyzed
+        </ResponseField>
+        <ResponseField name="avg_content_score" type="number">
+          Average content performance score (1-100)
+        </ResponseField>
+        <ResponseField name="top_performing_pages" type="integer">
+          Count of high-performing pages (score > 80)
+        </ResponseField>
+        <ResponseField name="underperforming_pages" type="integer">
+          Count of pages needing optimization (score < 50)
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="pages" type="array">
+      Array of analyzed page objects
+      <Expandable title="page object">
+        <ResponseField name="url" type="string">
+          The page URL
+        </ResponseField>
+        <ResponseField name="title" type="string">
+          Page title tag
+        </ResponseField>
+        <ResponseField name="content_score" type="integer">
+          Overall content performance score (1-100)
+        </ResponseField>
+        <ResponseField name="seo_metrics" type="object">
+          <Expandable title="seo_metrics object">
+            <ResponseField name="organic_traffic" type="integer">
+              Estimated monthly organic traffic
+            </ResponseField>
+            <ResponseField name="ranking_keywords" type="integer">
+              Number of keywords this page ranks for
+            </ResponseField>
+            <ResponseField name="avg_position" type="number">
+              Average ranking position across all keywords
+            </ResponseField>
+            <ResponseField name="top_keywords" type="array">
+              Top 5 ranking keywords for this page
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+        <ResponseField name="content_analysis" type="object">
+          <Expandable title="content_analysis object">
+            <ResponseField name="word_count" type="integer">
+              Total word count
+            </ResponseField>
+            <ResponseField name="readability_score" type="integer">
+              Content readability score (1-100)
+            </ResponseField>
+            <ResponseField name="content_freshness" type="string">
+              Content age assessment: "fresh", "stale", "outdated"
+            </ResponseField>
+            <ResponseField name="content_depth" type="string">
+              Content comprehensiveness: "shallow", "moderate", "comprehensive"
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+        <ResponseField name="optimization_opportunities" type="array">
+          Array of specific optimization recommendations
+        </ResponseField>
+        <ResponseField name="priority" type="string">
+          Optimization priority: "high", "medium", "low"
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="insights" type="object">
+      <Expandable title="insights object">
+        <ResponseField name="content_gaps" type="array">
+          Topics your site should cover but doesn't
+        </ResponseField>
+        <ResponseField name="cannibalization_issues" type="array">
+          Pages competing for the same keywords
+        </ResponseField>
+        <ResponseField name="top_recommendations" type="array">
+          Priority actions to improve overall content performance
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="credits_used" type="integer">
+      Number of credits consumed by this request
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="credits_remaining" type="integer">
+  Your remaining credit balance
+</ResponseField>
+
+<ResponseExample>
+
+```json Success Response
+{
+  "status": "success",
+  "data": {
+    "audit_summary": {
+      "total_pages_analyzed": 45,
+      "avg_content_score": 67,
+      "top_performing_pages": 8,
+      "underperforming_pages": 12
+    },
+    "pages": [
+      {
+        "url": "https://yoursite.com/sustainable-fashion-guide",
+        "title": "The Ultimate Guide to Sustainable Fashion",
+        "content_score": 85,
+        "seo_metrics": {
+          "organic_traffic": 1250,
+          "ranking_keywords": 23,
+          "avg_position": 8.5,
+          "top_keywords": [
+            "sustainable fashion guide",
+            "eco friendly clothing",
+            "ethical fashion brands",
+            "sustainable wardrobe",
+            "green fashion tips"
+          ]
+        },
+        "content_analysis": {
+          "word_count": 3200,
+          "readability_score": 78,
+          "content_freshness": "fresh",
+          "content_depth": "comprehensive"
+        },
+        "optimization_opportunities": [
+          "Add internal links to product pages",
+          "Update meta description to include target keywords",
+          "Add FAQ section for featured snippets"
+        ],
+        "priority": "medium"
+      }
+    ],
+    "insights": {
+      "content_gaps": [
+        "sustainable footwear",
+        "eco-friendly accessories",
+        "fashion recycling methods"
+      ],
+      "cannibalization_issues": [
+        {
+          "keyword": "sustainable fashion",
+          "competing_pages": [
+            "/sustainable-fashion-guide",
+            "/what-is-sustainable-fashion"
+          ]
+        }
+      ],
+      "top_recommendations": [
+        "Create comprehensive guides for content gap topics",
+        "Consolidate or differentiate cannibalized content",
+        "Update outdated content to improve freshness scores",
+        "Improve internal linking between related pages"
+      ]
+    },
+    "credits_used": 15
+  },
+  "credits_remaining": 235
+}
+```
+
+```json Error Response
+{
+  "status": "error",
+  "error": "Sitemap not found",
+  "message": "Could not find or access sitemap at the provided URL",
+  "code": "SITEMAP_NOT_FOUND"
+}
+```
+
+</ResponseExample>
+
+## Credit Cost
+
+<Info>
+  **Credit Cost**: 15 credits per request
+</Info>
+
+This is our most comprehensive analysis, consuming 15 credits regardless of the number of pages audited.
+
+## Content Score Breakdown
+
+<AccordionGroup>
+  <Accordion title="Score Range 80-100: Excellent">
+    **High-performing content** that's driving significant organic traffic and ranking well for target keywords. These pages are your content champions and should be used as templates for future content.
+  </Accordion>
+
+  <Accordion title="Score Range 60-79: Good">
+    **Solid performing content** with room for optimization. Usually requires minor improvements like better internal linking, updated meta tags, or content freshening.
+  </Accordion>
+
+  <Accordion title="Score Range 40-59: Needs Improvement">
+    **Underperforming content** that requires significant optimization or refreshing. These pages have potential but need strategic improvements to reach their ranking potential.
+  </Accordion>
+
+  <Accordion title="Score Range 0-39: Poor">
+    **Low-performing content** that may need complete rewriting, consolidation, or removal. These pages often have thin content, poor keyword targeting, or technical issues.
+  </Accordion>
+</AccordionGroup>
+
+## Use Cases
+
+<CardGroup cols={2}>
+  <Card
+    title="Content Optimization"
+    icon="chart-line"
+  >
+    Identify which pages need updates to improve search performance
+  </Card>
+  <Card
+    title="Content Strategy"
+    icon="lightbulb"
+  >
+    Discover gaps in your content coverage and new topic opportunities
+  </Card>
+  <Card
+    title="Resource Allocation"
+    icon="dollar-sign"
+  >
+    Prioritize content improvements based on potential impact
+  </Card>
+  <Card
+    title="Technical SEO"
+    icon="wrench"
+  >
+    Find cannibalization issues and technical content problems
+  </Card>
+</CardGroup>
+
+## Optimization Priority Guide
+
+<CardGroup cols={3}>
+  <Card
+    title="High Priority"
+    icon="exclamation-triangle"
+    iconType="duotone"
+  >
+    Pages with high traffic potential but low current performance. Quick wins that can significantly improve rankings.
+  </Card>
+  <Card
+    title="Medium Priority"
+    icon="chart-bar"
+    iconType="duotone"
+  >
+    Good performing pages that could be great with targeted improvements. Steady improvements with moderate effort.
+  </Card>
+  <Card
+    title="Low Priority"
+    icon="clock"
+    iconType="duotone"
+  >
+    Either already performing well or pages with limited improvement potential. Address after higher priorities.
+  </Card>
+</CardGroup>
+
+## Best Practices
+
+<Tip>
+  **Regular Audits**: Run content audits quarterly to track improvements and identify new optimization opportunities.
+</Tip>
+
+<Tip>
+  **Focus on High-Impact Pages**: Prioritize optimizing pages with high traffic potential and medium-to-low current performance.
+</Tip>
+
+<Tip>
+  **Address Cannibalization**: Pages competing for the same keywords can hurt each other's performance. Use the insights to identify and resolve these issues.
+</Tip>
+
+<Warning>
+  Ensure your sitemap is up-to-date and accessible. Outdated sitemaps will result in incomplete audits.
+</Warning>

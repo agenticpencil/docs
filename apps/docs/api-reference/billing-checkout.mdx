@@ -1,0 +1,417 @@
+---
+title: "Billing Checkout"
+api: "POST https://api.agenticpencil.com/v1/billing/checkout"
+description: "Create a checkout session for plan upgrades and subscription management"
+---
+
+Create a secure checkout session for upgrading to Pro or Scale plans. This endpoint generates a Stripe-hosted checkout URL for seamless subscription management.
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "https://api.agenticpencil.com/v1/billing/checkout" \
+  -H "Authorization: Bearer ap_your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "plan": "pro",
+    "billing_cycle": "monthly",
+    "success_url": "https://yourapp.com/success",
+    "cancel_url": "https://yourapp.com/cancel"
+  }'
+```
+
+```python Python
+import requests
+
+url = "https://api.agenticpencil.com/v1/billing/checkout"
+headers = {
+    "Authorization": "Bearer ap_your_api_key_here",
+    "Content-Type": "application/json"
+}
+data = {
+    "plan": "pro",
+    "billing_cycle": "monthly",
+    "success_url": "https://yourapp.com/success",
+    "cancel_url": "https://yourapp.com/cancel"
+}
+
+response = requests.post(url, headers=headers, json=data)
+result = response.json()
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const response = await axios.post(
+  'https://api.agenticpencil.com/v1/billing/checkout',
+  {
+    plan: 'pro',
+    billing_cycle: 'monthly',
+    success_url: 'https://yourapp.com/success',
+    cancel_url: 'https://yourapp.com/cancel'
+  },
+  {
+    headers: {
+      'Authorization': 'Bearer ap_your_api_key_here',
+      'Content-Type': 'application/json'
+    }
+  }
+);
+```
+
+</RequestExample>
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token using your AgenticPencil API key
+</ParamField>
+
+## Request Body
+
+<ParamField body="plan" type="string" required>
+  Target subscription plan: "pro" or "scale"
+</ParamField>
+
+<ParamField body="billing_cycle" type="string">
+  Billing frequency: "monthly" or "annual" (default: "monthly")
+</ParamField>
+
+<ParamField body="success_url" type="string" required>
+  URL to redirect users after successful payment
+</ParamField>
+
+<ParamField body="cancel_url" type="string" required>
+  URL to redirect users if they cancel checkout
+</ParamField>
+
+<ParamField body="promo_code" type="string">
+  Promotional code for discounts (optional)
+</ParamField>
+
+<ParamField body="metadata" type="object">
+  Additional metadata to attach to the subscription (optional)
+</ParamField>
+
+## Response
+
+<ResponseField name="status" type="string">
+  Status of the request ("success" or "error")
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="data object">
+    <ResponseField name="checkout_url" type="string">
+      Stripe-hosted checkout URL to redirect users to
+    </ResponseField>
+    <ResponseField name="session_id" type="string">
+      Checkout session ID for tracking
+    </ResponseField>
+    <ResponseField name="plan_details" type="object">
+      <Expandable title="plan_details object">
+        <ResponseField name="plan_name" type="string">
+          Human-readable plan name
+        </ResponseField>
+        <ResponseField name="credits_monthly" type="integer">
+          Monthly credit allocation
+        </ResponseField>
+        <ResponseField name="rate_limit" type="integer">
+          Requests per minute limit
+        </ResponseField>
+        <ResponseField name="price" type="object">
+          <Expandable title="price object">
+            <ResponseField name="amount" type="integer">
+              Price in cents
+            </ResponseField>
+            <ResponseField name="currency" type="string">
+              Currency code (e.g., "USD")
+            </ResponseField>
+            <ResponseField name="formatted" type="string">
+              Human-readable price (e.g., "$49.00")
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+        <ResponseField name="billing_cycle" type="string">
+          Confirmed billing cycle
+        </ResponseField>
+        <ResponseField name="discount" type="object">
+          Discount information if promo code applied
+          <Expandable title="discount object">
+            <ResponseField name="code" type="string">
+              Applied promotional code
+            </ResponseField>
+            <ResponseField name="discount_amount" type="integer">
+              Discount amount in cents
+            </ResponseField>
+            <ResponseField name="discount_percentage" type="number">
+              Percentage discount applied
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="expiry_time" type="string">
+      When the checkout session expires (ISO 8601)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseExample>
+
+```json Success Response
+{
+  "status": "success",
+  "data": {
+    "checkout_url": "https://checkout.stripe.com/pay/cs_test_1234567890abcdef",
+    "session_id": "cs_test_1234567890abcdef",
+    "plan_details": {
+      "plan_name": "Pro Plan",
+      "credits_monthly": 1000,
+      "rate_limit": 60,
+      "price": {
+        "amount": 4900,
+        "currency": "USD",
+        "formatted": "$49.00"
+      },
+      "billing_cycle": "monthly"
+    },
+    "expiry_time": "2024-02-17T18:10:32Z"
+  }
+}
+```
+
+```json Success Response with Discount
+{
+  "status": "success",
+  "data": {
+    "checkout_url": "https://checkout.stripe.com/pay/cs_test_1234567890abcdef",
+    "session_id": "cs_test_1234567890abcdef",
+    "plan_details": {
+      "plan_name": "Scale Plan",
+      "credits_monthly": 5000,
+      "rate_limit": 120,
+      "price": {
+        "amount": 19900,
+        "currency": "USD",
+        "formatted": "$199.00"
+      },
+      "billing_cycle": "annual",
+      "discount": {
+        "code": "LAUNCH50",
+        "discount_amount": 9950,
+        "discount_percentage": 50
+      }
+    },
+    "expiry_time": "2024-02-17T18:10:32Z"
+  }
+}
+```
+
+```json Error Response
+{
+  "status": "error",
+  "error": "Invalid plan",
+  "message": "Plan must be either 'pro' or 'scale'",
+  "code": "INVALID_PLAN"
+}
+```
+
+</ResponseExample>
+
+## Credit Cost
+
+<Info>
+  **Credit Cost**: FREE - Creating checkout sessions doesn't consume credits
+</Info>
+
+This endpoint is free to use and doesn't affect your credit balance.
+
+## Available Plans
+
+<CardGroup cols={2}>
+  <Card
+    title="Pro Plan"
+    icon="star"
+  >
+    - **1,000 credits/month**
+    - **60 requests/minute**
+    - **$49/month** or **$490/year**
+    - Priority email support
+  </Card>
+  <Card
+    title="Scale Plan"
+    icon="rocket"
+  >
+    - **5,000 credits/month**
+    - **120 requests/minute**
+    - **$199/month** or **$1,990/year**
+    - Priority support + phone support
+  </Card>
+</CardGroup>
+
+## Billing Cycles
+
+<AccordionGroup>
+  <Accordion title="Monthly Billing">
+    - Charged every month on the same date you subscribed
+    - More flexibility to upgrade/downgrade
+    - No long-term commitment
+    - Standard pricing as listed
+  </Accordion>
+
+  <Accordion title="Annual Billing">
+    - Charged once per year
+    - **2 months free** compared to monthly billing
+    - Better value for consistent usage
+    - Requires annual commitment
+  </Accordion>
+</AccordionGroup>
+
+## Checkout Flow
+
+<Steps>
+  <Step title="Create Session">
+    Call this endpoint to generate a secure checkout URL
+  </Step>
+  <Step title="Redirect User">
+    Send users to the returned `checkout_url`
+  </Step>
+  <Step title="User Completes Payment">
+    User enters payment details on Stripe's secure checkout page
+  </Step>
+  <Step title="Success/Cancel Handling">
+    User is redirected to your `success_url` or `cancel_url`
+  </Step>
+  <Step title="Webhook Processing">
+    AgenticPencil processes the payment and upgrades the account automatically
+  </Step>
+</Steps>
+
+## Success and Cancel URLs
+
+Your redirect URLs should handle the checkout outcome appropriately:
+
+<CodeGroup>
+
+```html Success URL Example
+<!-- https://yourapp.com/success -->
+<div class="success-page">
+  <h1>Welcome to AgenticPencil Pro!</h1>
+  <p>Your account has been upgraded successfully.</p>
+  <a href="/dashboard">Go to Dashboard</a>
+</div>
+```
+
+```html Cancel URL Example
+<!-- https://yourapp.com/cancel -->
+<div class="cancel-page">
+  <h1>Checkout Cancelled</h1>
+  <p>Your subscription was not activated.</p>
+  <a href="/pricing">View Pricing Again</a>
+</div>
+```
+
+</CodeGroup>
+
+## Promotional Codes
+
+<CardGroup cols={2}>
+  <Card
+    title="Percentage Discounts"
+    icon="percent"
+  >
+    Apply percentage-based discounts (e.g., "LAUNCH50" for 50% off)
+  </Card>
+  <Card
+    title="Fixed Amount Discounts"
+    icon="dollar-sign"
+  >
+    Apply fixed dollar amount discounts (e.g., "SAVE10" for $10 off)
+  </Card>
+  <Card
+    title="First Month Free"
+    icon="gift"
+  >
+    Some codes provide the first billing period at no charge
+  </Card>
+  <Card
+    title="Extended Trials"
+    icon="clock"
+  >
+    Special codes may extend free trial periods
+  </Card>
+</CardGroup>
+
+## Common Errors
+
+<AccordionGroup>
+  <Accordion title="INVALID_PLAN - Unsupported plan type">
+    ```json
+    {
+      "status": "error",
+      "error": "Invalid plan",
+      "message": "Plan must be either 'pro' or 'scale'",
+      "code": "INVALID_PLAN"
+    }
+    ```
+    **Solution**: Use "pro" or "scale" as the plan value
+  </Accordion>
+
+  <Accordion title="INVALID_URL - Malformed redirect URLs">
+    ```json
+    {
+      "status": "error",
+      "error": "Invalid URL",
+      "message": "success_url must be a valid HTTPS URL",
+      "code": "INVALID_URL"
+    }
+    ```
+    **Solution**: Ensure URLs are valid HTTPS URLs
+  </Accordion>
+
+  <Accordion title="PROMO_CODE_INVALID - Invalid promotional code">
+    ```json
+    {
+      "status": "error",
+      "error": "Invalid promo code",
+      "message": "The promotional code 'INVALID123' is not valid or has expired",
+      "code": "PROMO_CODE_INVALID"
+    }
+    ```
+    **Solution**: Check the promo code or proceed without it
+  </Accordion>
+
+  <Accordion title="ALREADY_SUBSCRIBED - User already has active subscription">
+    ```json
+    {
+      "status": "error",
+      "error": "Already subscribed",
+      "message": "User already has an active subscription to this plan",
+      "code": "ALREADY_SUBSCRIBED"
+    }
+    ```
+    **Solution**: User can manage their subscription in the dashboard instead
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+  **HTTPS Required**: Both success_url and cancel_url must use HTTPS for security.
+</Tip>
+
+<Tip>
+  **Session Expiry**: Checkout sessions expire after 24 hours. Generate new ones if users need to restart checkout.
+</Tip>
+
+<Tip>
+  **User Experience**: Clearly explain what users get with each plan before sending them to checkout.
+</Tip>
+
+<Tip>
+  **Error Handling**: Always handle potential errors gracefully and provide alternative upgrade paths.
+</Tip>
+
+<Warning>
+  Never hardcode promotional codes in your application. Always allow users to input them during checkout or fetch valid codes from your backend.
+</Warning>

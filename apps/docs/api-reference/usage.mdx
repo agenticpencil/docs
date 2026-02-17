@@ -1,0 +1,342 @@
+---
+title: "Usage Tracking"
+api: "GET https://api.agenticpencil.com/v1/usage"
+description: "Monitor your API usage and credit consumption"
+---
+
+Track your API usage, remaining credits, and get insights into your consumption patterns. This endpoint is free and doesn't consume any credits.
+
+<RequestExample>
+
+```bash cURL
+curl -X GET "https://api.agenticpencil.com/v1/usage" \
+  -H "Authorization: Bearer ap_your_api_key_here"
+```
+
+```python Python
+import requests
+
+url = "https://api.agenticpencil.com/v1/usage"
+headers = {
+    "Authorization": "Bearer ap_your_api_key_here"
+}
+
+response = requests.get(url, headers=headers)
+result = response.json()
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const response = await axios.get(
+  'https://api.agenticpencil.com/v1/usage',
+  {
+    headers: {
+      'Authorization': 'Bearer ap_your_api_key_here'
+    }
+  }
+);
+```
+
+</RequestExample>
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token using your AgenticPencil API key
+</ParamField>
+
+## Response
+
+<ResponseField name="status" type="string">
+  Status of the request ("success" or "error")
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="data object">
+    <ResponseField name="current_period" type="object">
+      <Expandable title="current_period object">
+        <ResponseField name="credits_used" type="integer">
+          Credits consumed in the current billing period
+        </ResponseField>
+        <ResponseField name="credits_remaining" type="integer">
+          Credits remaining in the current billing period
+        </ResponseField>
+        <ResponseField name="credits_limit" type="integer">
+          Total credits available per period based on your plan
+        </ResponseField>
+        <ResponseField name="period_start" type="string">
+          Start date of current billing period (ISO 8601)
+        </ResponseField>
+        <ResponseField name="period_end" type="string">
+          End date of current billing period (ISO 8601)
+        </ResponseField>
+        <ResponseField name="days_remaining" type="integer">
+          Days left in the current billing period
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="usage_by_endpoint" type="object">
+      <Expandable title="usage_by_endpoint object">
+        <ResponseField name="keywords_research" type="object">
+          <Expandable title="endpoint usage">
+            <ResponseField name="requests" type="integer">
+              Number of requests made to this endpoint
+            </ResponseField>
+            <ResponseField name="credits_consumed" type="integer">
+              Total credits consumed by this endpoint
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+        <ResponseField name="keywords_gaps" type="object">
+          Similar structure for gap analysis endpoint
+        </ResponseField>
+        <ResponseField name="content_audit" type="object">
+          Similar structure for content audit endpoint
+        </ResponseField>
+        <ResponseField name="content_recommend" type="object">
+          Similar structure for content recommendations endpoint
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="rate_limits" type="object">
+      <Expandable title="rate_limits object">
+        <ResponseField name="requests_per_minute" type="integer">
+          Current rate limit (requests per minute)
+        </ResponseField>
+        <ResponseField name="requests_this_minute" type="integer">
+          Requests made in the current minute
+        </ResponseField>
+        <ResponseField name="reset_time" type="string">
+          When the rate limit resets (ISO 8601)
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="plan_details" type="object">
+      <Expandable title="plan_details object">
+        <ResponseField name="plan_name" type="string">
+          Current subscription plan
+        </ResponseField>
+        <ResponseField name="plan_type" type="string">
+          Plan type: "free", "pro", "scale", "enterprise"
+        </ResponseField>
+        <ResponseField name="billing_cycle" type="string">
+          Billing frequency: "monthly", "annual"
+        </ResponseField>
+        <ResponseField name="auto_renewal" type="boolean">
+          Whether plan auto-renews
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="historical_usage" type="array">
+      Usage data from previous billing periods
+      <Expandable title="historical period">
+        <ResponseField name="period" type="string">
+          Period identifier (e.g., "2024-01")
+        </ResponseField>
+        <ResponseField name="credits_used" type="integer">
+          Total credits consumed in this period
+        </ResponseField>
+        <ResponseField name="credits_available" type="integer">
+          Credits available during this period
+        </ResponseField>
+        <ResponseField name="utilization_rate" type="number">
+          Percentage of available credits used
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseExample>
+
+```json Success Response
+{
+  "status": "success",
+  "data": {
+    "current_period": {
+      "credits_used": 245,
+      "credits_remaining": 755,
+      "credits_limit": 1000,
+      "period_start": "2024-02-01T00:00:00Z",
+      "period_end": "2024-02-29T23:59:59Z",
+      "days_remaining": 12
+    },
+    "usage_by_endpoint": {
+      "keywords_research": {
+        "requests": 35,
+        "credits_consumed": 175
+      },
+      "keywords_gaps": {
+        "requests": 4,
+        "credits_consumed": 40
+      },
+      "content_audit": {
+        "requests": 1,
+        "credits_consumed": 15
+      },
+      "content_recommend": {
+        "requests": 1,
+        "credits_consumed": 10
+      }
+    },
+    "rate_limits": {
+      "requests_per_minute": 60,
+      "requests_this_minute": 3,
+      "reset_time": "2024-02-17T17:11:00Z"
+    },
+    "plan_details": {
+      "plan_name": "Pro Plan",
+      "plan_type": "pro",
+      "billing_cycle": "monthly",
+      "auto_renewal": true
+    },
+    "historical_usage": [
+      {
+        "period": "2024-01",
+        "credits_used": 892,
+        "credits_available": 1000,
+        "utilization_rate": 89.2
+      },
+      {
+        "period": "2023-12",
+        "credits_used": 1000,
+        "credits_available": 1000,
+        "utilization_rate": 100.0
+      }
+    ]
+  }
+}
+```
+
+```json Error Response
+{
+  "status": "error",
+  "error": "Invalid API key",
+  "message": "The provided API key is invalid or has been revoked",
+  "code": "INVALID_API_KEY"
+}
+```
+
+</ResponseExample>
+
+## Credit Cost
+
+<Info>
+  **Credit Cost**: FREE - This endpoint doesn't consume any credits
+</Info>
+
+The usage endpoint is completely free and can be called as frequently as needed within your rate limits.
+
+## Understanding Your Usage
+
+<AccordionGroup>
+  <Accordion title="Credit Consumption Patterns">
+    Monitor which endpoints you use most to understand your API consumption patterns. This helps with:
+    - Budget planning for plan upgrades
+    - Optimizing API call strategies
+    - Identifying opportunities to batch requests
+  </Accordion>
+
+  <Accordion title="Rate Limit Management">
+    Track your current rate limit usage to avoid hitting limits. The response shows:
+    - Your plan's requests per minute limit
+    - Current minute's request count
+    - When limits reset
+  </Accordion>
+
+  <Accordion title="Historical Trends">
+    Review past periods to:
+    - Understand seasonal usage patterns
+    - Plan for capacity needs
+    - Optimize subscription timing
+  </Accordion>
+
+  <Accordion title="Utilization Rate">
+    Your utilization rate shows how efficiently you're using your plan:
+    - 80-100%: You're maximizing your plan value
+    - 50-79%: Good usage, consider your growth patterns
+    - Below 50%: You might be on a higher plan than needed
+  </Accordion>
+</AccordionGroup>
+
+## Monitoring and Alerting
+
+<CardGroup cols={2}>
+  <Card
+    title="Proactive Monitoring"
+    icon="chart-line"
+  >
+    Call this endpoint regularly in your applications to track usage and avoid surprises
+  </Card>
+  <Card
+    title="Budget Alerts"
+    icon="bell"
+  >
+    Set up alerts when you reach certain credit thresholds (75%, 90%, etc.)
+  </Card>
+  <Card
+    title="Plan Optimization"
+    icon="dollar-sign"
+  >
+    Use historical data to determine if you need to upgrade or downgrade plans
+  </Card>
+  <Card
+    title="Performance Tracking"
+    icon="speedometer"
+  >
+    Monitor rate limit usage to ensure optimal API performance
+  </Card>
+</CardGroup>
+
+## Usage Best Practices
+
+<Tip>
+  **Regular Monitoring**: Call the usage endpoint at least daily in production applications to stay aware of your consumption.
+</Tip>
+
+<Tip>
+  **Set Usage Thresholds**: Implement warnings when you reach 75% and 90% of your credit limit to avoid service interruptions.
+</Tip>
+
+<Tip>
+  **Plan Ahead**: Use historical usage data to predict when you might need to upgrade your plan.
+</Tip>
+
+<Tip>
+  **Batch Operations**: If you're consistently hitting rate limits, consider batching operations or upgrading to a higher-tier plan.
+</Tip>
+
+## Error Handling
+
+Since this is a monitoring endpoint, robust error handling is crucial:
+
+```python Python Error Handling
+import requests
+from datetime import datetime
+
+def check_usage(api_key):
+    try:
+        response = requests.get(
+            "https://api.agenticpencil.com/v1/usage",
+            headers={"Authorization": f"Bearer {api_key}"}
+        )
+        response.raise_for_status()
+        
+        data = response.json()
+        credits_remaining = data['data']['current_period']['credits_remaining']
+        
+        # Alert if running low on credits
+        if credits_remaining < 50:
+            print(f"⚠️  Low credits warning: Only {credits_remaining} credits remaining!")
+            
+        return data
+        
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to fetch usage data: {e}")
+        return None
+```
+
+<Warning>
+  If you can't access usage data due to API issues, implement fallback monitoring to avoid unexpected service interruptions.
+</Warning>

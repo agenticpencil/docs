@@ -1,0 +1,233 @@
+---
+title: 'Authentication'
+description: 'Learn how to authenticate with the AgenticPencil API'
+---
+
+## API Key Authentication
+
+AgenticPencil uses Bearer token authentication with API keys. All API requests must include your API key in the Authorization header.
+
+## API Key Format
+
+All AgenticPencil API keys follow this format:
+- **Prefix**: `ap_`
+- **Length**: 32 characters after the prefix
+- **Example**: `ap_1234567890abcdefghijklmnopqrstuv`
+
+## How to Get Your API Key
+
+<Steps>
+  <Step title="Create Account">
+    Sign up at [platform.agenticpencil.com](https://platform.agenticpencil.com)
+  </Step>
+  <Step title="Verify Email">
+    Check your email and click the verification link
+  </Step>
+  <Step title="Access API Keys">
+    Navigate to **Settings** → **API Keys** in your dashboard
+  </Step>
+  <Step title="Generate Key">
+    Click **"Generate New API Key"** and give it a descriptive name
+  </Step>
+  <Step title="Copy & Store">
+    Copy your key immediately - you won't be able to see it again!
+  </Step>
+</Steps>
+
+## Making Authenticated Requests
+
+Include your API key in the `Authorization` header with the `Bearer` prefix:
+
+<CodeGroup>
+
+```bash cURL
+curl -X GET "https://api.agenticpencil.com/v1/usage" \
+  -H "Authorization: Bearer ap_your_api_key_here"
+```
+
+```python Python
+import requests
+
+headers = {
+    "Authorization": "Bearer ap_your_api_key_here",
+    "Content-Type": "application/json"
+}
+
+response = requests.get(
+    "https://api.agenticpencil.com/v1/usage",
+    headers=headers
+)
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const response = await axios.get(
+  'https://api.agenticpencil.com/v1/usage',
+  {
+    headers: {
+      'Authorization': 'Bearer ap_your_api_key_here',
+      'Content-Type': 'application/json'
+    }
+  }
+);
+```
+
+```php PHP
+<?php
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'https://api.agenticpencil.com/v1/usage');
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Authorization: Bearer ap_your_api_key_here',
+    'Content-Type: application/json'
+]);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+$response = curl_exec($ch);
+curl_close($ch);
+?>
+```
+
+</CodeGroup>
+
+## API Key Management
+
+### Multiple Keys
+
+You can create multiple API keys for different use cases:
+
+<CardGroup cols={2}>
+  <Card
+    title="Development"
+    icon="code"
+  >
+    Use separate keys for development and testing environments
+  </Card>
+  <Card
+    title="Production"
+    icon="server"
+  >
+    Dedicated keys for your production AI agents
+  </Card>
+  <Card
+    title="Team Members"
+    icon="users"
+  >
+    Individual keys for team members with different access levels
+  </Card>
+  <Card
+    title="Third-party Integrations"
+    icon="plug"
+  >
+    Separate keys for external services and integrations
+  </Card>
+</CardGroup>
+
+### Key Rotation
+
+For security best practices, rotate your API keys regularly:
+
+1. **Generate** a new API key
+2. **Update** your applications with the new key
+3. **Test** that everything works correctly
+4. **Revoke** the old key
+
+### Key Permissions
+
+API keys inherit the permissions of the user who created them. Currently, all API keys have access to:
+
+- All endpoint functionality
+- Credit consumption up to your plan limits
+- Rate limits based on your subscription tier
+
+## Authentication Errors
+
+Common authentication errors and how to resolve them:
+
+<AccordionGroup>
+  <Accordion title="401 Unauthorized - Invalid API Key">
+    ```json
+    {
+      "error": "Invalid API key",
+      "message": "The provided API key is invalid or has been revoked",
+      "code": "INVALID_API_KEY"
+    }
+    ```
+    **Solution**: Double-check your API key format and ensure it starts with `ap_`
+  </Accordion>
+
+  <Accordion title="401 Unauthorized - Missing Authorization Header">
+    ```json
+    {
+      "error": "Missing authorization",
+      "message": "Authorization header is required",
+      "code": "MISSING_AUTH_HEADER"
+    }
+    ```
+    **Solution**: Include the `Authorization: Bearer ap_your_key` header in your request
+  </Accordion>
+
+  <Accordion title="403 Forbidden - Expired Key">
+    ```json
+    {
+      "error": "API key expired",
+      "message": "Your API key has expired. Please generate a new one",
+      "code": "EXPIRED_API_KEY"
+    }
+    ```
+    **Solution**: Generate a new API key from your dashboard
+  </Accordion>
+
+  <Accordion title="429 Too Many Requests - Rate Limited">
+    ```json
+    {
+      "error": "Rate limit exceeded",
+      "message": "You have exceeded your rate limit. Please try again later",
+      "code": "RATE_LIMIT_EXCEEDED"
+    }
+    ```
+    **Solution**: Wait before making another request or upgrade your plan for higher limits
+  </Accordion>
+</AccordionGroup>
+
+## Security Best Practices
+
+<Warning>
+  **Never expose your API key in client-side code, public repositories, or logs!**
+</Warning>
+
+### Environment Variables
+
+Store your API key in environment variables:
+
+```bash .env
+AGENTICPENCIL_API_KEY=ap_your_api_key_here
+```
+
+```python Python
+import os
+api_key = os.getenv('AGENTICPENCIL_API_KEY')
+```
+
+```javascript Node.js
+const apiKey = process.env.AGENTICPENCIL_API_KEY;
+```
+
+### Server-Side Only
+
+Always make API calls from server-side code, never from:
+- Frontend JavaScript
+- Mobile app client code
+- Browser extensions
+- Public-facing code
+
+### Monitor Usage
+
+Regularly check your API usage in the dashboard to detect:
+- Unexpected spikes in usage
+- Potential security breaches
+- API key misuse
+
+<Tip>
+  Set up usage alerts in your dashboard to get notified when your credit consumption exceeds expected thresholds.
+</Tip>

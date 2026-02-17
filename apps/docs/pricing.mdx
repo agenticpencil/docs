@@ -1,0 +1,418 @@
+---
+title: 'Pricing & Credits'
+description: 'Understand AgenticPencil pricing plans and credit system'
+---
+
+## Plans Overview
+
+AgenticPencil offers flexible pricing to scale with your needs, from individual developers to enterprise teams.
+
+<CardGroup cols={2}>
+  <Card
+    title="Free Plan"
+    icon="seedling"
+    iconType="duotone"
+  >
+    **$0/month**
+    
+    Perfect for getting started and testing the API
+    - 50 credits per month
+    - 10 requests per minute
+    - All API endpoints
+    - Community support
+  </Card>
+  <Card
+    title="Pro Plan"
+    icon="star"
+    iconType="duotone"
+  >
+    **$49/month** or **$490/year**
+    
+    Built for growing applications and regular usage
+    - 1,000 credits per month
+    - 60 requests per minute
+    - All API endpoints
+    - Priority email support
+    - **2 months free** with annual billing
+  </Card>
+  <Card
+    title="Scale Plan"
+    icon="rocket"
+    iconType="duotone"
+  >
+    **$199/month** or **$1,990/year**
+    
+    Designed for high-volume applications and teams
+    - 5,000 credits per month
+    - 120 requests per minute
+    - All API endpoints
+    - Priority support + phone support
+    - **2 months free** with annual billing
+  </Card>
+  <Card
+    title="Enterprise"
+    icon="building"
+    iconType="duotone"
+  >
+    **Custom pricing**
+    
+    Tailored solutions for large organizations
+    - Custom credit allocations
+    - Up to 300 requests per minute
+    - Dedicated account management
+    - SLA guarantees
+    - Custom integrations
+  </Card>
+</CardGroup>
+
+## Credit System
+
+AgenticPencil uses a credit-based system where different endpoints consume different amounts of credits based on their computational complexity.
+
+### Credit Costs by Endpoint
+
+<AccordionGroup>
+  <Accordion title="Keywords Research - 5 Credits">
+    **POST /v1/keywords/research**
+    
+    Research high-opportunity keywords for your domain and topic. This endpoint provides:
+    - Up to 100 keyword suggestions per request
+    - Search volume, competition, and difficulty data
+    - Opportunity scoring and trend analysis
+    
+    **Value**: Each credit can return up to 20 keyword opportunities, making this extremely cost-effective for content planning.
+  </Accordion>
+
+  <Accordion title="Keywords Gap Analysis - 10 Credits">
+    **POST /v1/keywords/gaps**
+    
+    Identify keyword opportunities your competitors rank for but you don't. Includes:
+    - Competitive analysis across up to 5 competitors
+    - Gap identification with opportunity scoring
+    - Content suggestions for each gap
+    
+    **Value**: Comprehensive competitive intelligence that would take hours of manual research.
+  </Accordion>
+
+  <Accordion title="Content Audit - 15 Credits">
+    **POST /v1/content/audit**
+    
+    Comprehensive analysis of your existing content performance. Provides:
+    - Analysis of up to 500 pages
+    - Content scoring and optimization recommendations
+    - Cannibalization detection and insights
+    
+    **Value**: Deep content insights equivalent to expensive SEO audit tools.
+  </Accordion>
+
+  <Accordion title="Content Recommendations - 10 Credits">
+    **POST /v1/content/recommend**
+    
+    AI-powered content strategy suggestions based on your goals. Includes:
+    - Strategic content recommendations with outlines
+    - Content calendar and distribution suggestions
+    - Competitive insights and unique angles
+    
+    **Value**: Strategic consulting-level recommendations powered by AI.
+  </Accordion>
+
+  <Accordion title="Usage Tracking - FREE">
+    **GET /v1/usage**
+    
+    Monitor your API usage and credit consumption. This endpoint:
+    - Doesn't consume any credits
+    - Can be called as frequently as needed
+    - Provides detailed usage breakdowns
+  </Accordion>
+
+  <Accordion title="User Registration - FREE">
+    **POST /v1/auth/register**
+    
+    Create new user accounts programmatically. This endpoint:
+    - Doesn't consume any credits
+    - Perfect for onboarding flows
+    - Provides immediate API access
+  </Accordion>
+</AccordionGroup>
+
+## Plan Comparison
+
+<div className="overflow-x-auto">
+  <table className="w-full">
+    <thead>
+      <tr className="border-b">
+        <th className="text-left p-3">Feature</th>
+        <th className="text-center p-3">Free</th>
+        <th className="text-center p-3">Pro</th>
+        <th className="text-center p-3">Scale</th>
+        <th className="text-center p-3">Enterprise</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr className="border-b">
+        <td className="p-3 font-medium">Monthly Credits</td>
+        <td className="text-center p-3">50</td>
+        <td className="text-center p-3">1,000</td>
+        <td className="text-center p-3">5,000</td>
+        <td className="text-center p-3">Custom</td>
+      </tr>
+      <tr className="border-b">
+        <td className="p-3 font-medium">Rate Limit (req/min)</td>
+        <td className="text-center p-3">10</td>
+        <td className="text-center p-3">60</td>
+        <td className="text-center p-3">120</td>
+        <td className="text-center p-3">300+</td>
+      </tr>
+      <tr className="border-b">
+        <td className="p-3 font-medium">Keyword Research Calls</td>
+        <td className="text-center p-3">10/month</td>
+        <td className="text-center p-3">200/month</td>
+        <td className="text-center p-3">1,000/month</td>
+        <td className="text-center p-3">Unlimited</td>
+      </tr>
+      <tr className="border-b">
+        <td className="p-3 font-medium">Content Audits</td>
+        <td className="text-center p-3">3/month</td>
+        <td className="text-center p-3">66/month</td>
+        <td className="text-center p-3">333/month</td>
+        <td className="text-center p-3">Unlimited</td>
+      </tr>
+      <tr className="border-b">
+        <td className="p-3 font-medium">Support</td>
+        <td className="text-center p-3">Community</td>
+        <td className="text-center p-3">Email Priority</td>
+        <td className="text-center p-3">Email + Phone</td>
+        <td className="text-center p-3">Dedicated Manager</td>
+      </tr>
+      <tr className="border-b">
+        <td className="p-3 font-medium">SLA</td>
+        <td className="text-center p-3">None</td>
+        <td className="text-center p-3">99.9%</td>
+        <td className="text-center p-3">99.95%</td>
+        <td className="text-center p-3">99.99%</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+## Credit Usage Examples
+
+Here's how different usage patterns align with our plans:
+
+<CardGroup cols={3}>
+  <Card
+    title="Content Creator"
+    icon="pen-nib"
+    iconType="duotone"
+  >
+    **Free Plan** (50 credits)
+    - 8 keyword research calls
+    - 2 content recommendation calls
+    - Perfect for individual bloggers
+  </Card>
+  <Card
+    title="SEO Agency"
+    icon="chart-line"
+    iconType="duotone"
+  >
+    **Pro Plan** (1,000 credits)
+    - 150 keyword research calls
+    - 50 gap analyses
+    - 10 content audits per month
+    - Great for agencies with 5-10 clients
+  </Card>
+  <Card
+    title="Enterprise Platform"
+    icon="server"
+    iconType="duotone"
+  >
+    **Scale Plan** (5,000 credits)
+    - 500+ keyword research calls
+    - 200 gap analyses
+    - 100 content audits per month
+    - Perfect for large platforms
+  </Card>
+</CardGroup>
+
+## Billing and Credits
+
+### Credit Rollover
+
+<AccordionGroup>
+  <Accordion title="How Credit Rollover Works">
+    - **Free Plan**: Credits reset monthly, no rollover
+    - **Paid Plans**: Unused credits roll over for up to 12 months
+    - **Maximum Rollover**: 3x your monthly allocation
+    - **Example**: Pro plan users can accumulate up to 3,000 credits
+  </Accordion>
+
+  <Accordion title="Credit Expiration">
+    - Credits expire 12 months from when they were issued
+    - Oldest credits are used first (FIFO system)
+    - You'll receive warnings before credits expire
+    - No refunds for expired credits
+  </Accordion>
+</AccordionGroup>
+
+### Billing Cycles
+
+<CardGroup cols={2}>
+  <Card
+    title="Monthly Billing"
+    icon="calendar"
+  >
+    - Charged monthly on your signup date
+    - Full flexibility to upgrade/downgrade
+    - Standard pricing
+    - Credits allocated monthly
+  </Card>
+  <Card
+    title="Annual Billing"
+    icon="calendar-year"
+  >
+    - **Save 17%** - Get 2 months free
+    - Charged once per year
+    - All credits allocated upfront
+    - Better for consistent usage
+  </Card>
+</CardGroup>
+
+### Overage Protection
+
+<Warning>
+  **No overage charges**: If you run out of credits, API calls will be rejected with a clear error message. You won't be charged unexpected fees.
+</Warning>
+
+Options when you run out of credits:
+- **Upgrade your plan** for immediate access to more credits
+- **Wait for next billing cycle** (free and monthly plans)
+- **Purchase additional credit packs** (coming soon)
+
+## Cost-Benefit Analysis
+
+### Compared to Manual Work
+
+<div className="overflow-x-auto">
+  <table className="w-full">
+    <thead>
+      <tr className="border-b">
+        <th className="text-left p-3">Task</th>
+        <th className="text-center p-3">Manual Time</th>
+        <th className="text-center p-3">AgenticPencil</th>
+        <th className="text-center p-3">Time Savings</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr className="border-b">
+        <td className="p-3 font-medium">Keyword Research</td>
+        <td className="text-center p-3">2-4 hours</td>
+        <td className="text-center p-3">30 seconds</td>
+        <td className="text-center p-3">98% faster</td>
+      </tr>
+      <tr className="border-b">
+        <td className="p-3 font-medium">Competitive Gap Analysis</td>
+        <td className="text-center p-3">4-6 hours</td>
+        <td className="text-center p-3">45 seconds</td>
+        <td className="text-center p-3">99% faster</td>
+      </tr>
+      <tr className="border-b">
+        <td className="p-3 font-medium">Content Audit</td>
+        <td className="text-center p-3">8-12 hours</td>
+        <td className="text-center p-3">60 seconds</td>
+        <td className="text-center p-3">99% faster</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+### ROI Calculator
+
+For a Pro Plan user ($49/month):
+- **1,000 credits = $0.049 per credit**
+- **Keyword research = $0.245 per call** (5 credits)
+- **Content audit = $0.735 per call** (15 credits)
+
+Compare to:
+- Freelance SEO consultant: $75-150/hour
+- Enterprise SEO tools: $300-1,000/month
+- Manual research time: 20-40 hours/month saved
+
+<Tip>
+  **Break-even analysis**: If you save just 1 hour per month at a $50/hour rate, the Pro Plan pays for itself.
+</Tip>
+
+## Enterprise Solutions
+
+For organizations with specific needs:
+
+<CardGroup cols={2}>
+  <Card
+    title="Custom Credit Packages"
+    icon="building-columns"
+  >
+    - Tailored credit allocations
+    - Volume discounts available
+    - Flexible billing terms
+    - Multi-year agreements
+  </Card>
+  <Card
+    title="Dedicated Infrastructure"
+    icon="server"
+  >
+    - Private API endpoints
+    - Guaranteed uptime SLAs
+    - Custom rate limits
+    - White-label options
+  </Card>
+  <Card
+    title="Advanced Support"
+    icon="headset"
+  >
+    - Dedicated account manager
+    - Phone and video support
+    - Custom integration assistance
+    - Training and onboarding
+  </Card>
+  <Card
+    title="Data & Security"
+    icon="shield-check"
+  >
+    - SOC 2 Type II compliance
+    - Custom data retention policies
+    - On-premise deployment options
+    - Advanced security features
+  </Card>
+</CardGroup>
+
+## Frequently Asked Questions
+
+<AccordionGroup>
+  <Accordion title="Can I change plans at any time?">
+    Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately:
+    - **Upgrades**: Instant access to higher limits and credits
+    - **Downgrades**: Take effect at your next billing cycle
+    - **Annual to Monthly**: Converts at next renewal
+  </Accordion>
+
+  <Accordion title="What happens if I exceed my rate limit?">
+    Requests that exceed your rate limit will receive a `429 Too Many Requests` error. No credits are consumed for rejected requests. Consider upgrading for higher rate limits.
+  </Accordion>
+
+  <Accordion title="Do unused credits expire?">
+    - **Free Plan**: Credits reset monthly
+    - **Paid Plans**: Credits roll over for up to 12 months
+    - You'll receive warnings before credits expire
+  </Accordion>
+
+  <Accordion title="Can I purchase additional credits?">
+    Currently, the best way to get more credits is to upgrade your plan. We're working on add-on credit packs for occasional high-usage periods.
+  </Accordion>
+
+  <Accordion title="Is there a free trial for paid plans?">
+    The Free Plan serves as our trial - you get 50 credits to test all endpoints. No credit card required to start.
+  </Accordion>
+</AccordionGroup>
+
+<Info>
+  **Need help choosing a plan?** Contact our team at [sales@agenticpencil.com](mailto:sales@agenticpencil.com) for personalized recommendations based on your usage patterns.
+</Info>
