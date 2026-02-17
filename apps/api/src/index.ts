@@ -558,7 +558,7 @@ function generateTitle(kw: string, type: string) {
   return type === 'pillar' ? `The Complete Guide to ${k}` : type === 'comparison' ? `${k}: Best Options Compared` : type === 'guide' ? `How to ${k}: Step-by-Step` : `${k}: What You Need to Know`;
 }
 
-export const config = { runtime: 'nodejs' };
+export const config = { maxDuration: 60 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Convert VercelRequest to a standard Request
