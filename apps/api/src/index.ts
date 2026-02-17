@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
-import { handle } from 'hono/vercel';
 import { cors } from 'hono/cors';
 import { createClient } from '@supabase/supabase-js';
 import { createHash, randomUUID } from 'node:crypto';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 
 // ─── Types ───────────────────────────────────────────────
@@ -559,4 +559,34 @@ function generateTitle(kw: string, type: string) {
 }
 
 export const config = { runtime: 'nodejs' };
-export default handle(app);
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Convert VercelRequest to a standard Request
+  const url = new URL(req.url || '/', `https://${req.headers.host || 'localhost'}`);
+  const headers = new Headers();
+  for (const [key, value] of Object.entries(req.headers)) {
+    if (value) headers.set(key, Array.isArray(value) ? value[0] : value);
+  }
+
+  let body: BodyInit | undefined;
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+  }
+
+  const request = new Request(url.toString(), {
+    method: req.method || 'GET',
+    headers,
+    body,
+  });
+
+  const response = await app.fetch(request);
+
+  // Set response headers
+  response.headers.forEach((value, key) => {
+    res.setHeader(key, value);
+  });
+
+  res.status(response.status);
+  const text = await response.text();
+  res.end(text);
+}
