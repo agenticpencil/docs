@@ -116,8 +116,8 @@ async function creditsCheck(c: any, next: any) {
 
   if (c.res.status >= 200 && c.res.status < 300) {
     const db = getSupabase();
-    await db.rpc('increment_credits', { p_user_id: c.get('userId'), p_amount: needed }).catch(() => {});
-    await db.from('usage_logs').insert({ api_key_id: c.get('apiKeyId'), user_id: c.get('userId'), endpoint: path, credits_used: needed, status_code: c.res.status }).catch(() => {});
+    await db.rpc('increment_credits', { p_user_id: c.get('userId'), p_amount: needed }).then(() => {});
+    db.from('usage_logs').insert({ api_key_id: c.get('apiKeyId'), user_id: c.get('userId'), endpoint: path, credits_used: needed, status_code: c.res.status }).then(() => {});
   }
 }
 
@@ -343,7 +343,7 @@ v1.post('/keywords/research', creditsCheck, async (c) => {
 
     const result = { domain, topic: topic || domain, country, clusters, total_keywords: allKeywords.length };
 
-    await db.from('cached_results').upsert({ cache_key: cacheKey, endpoint: '/v1/keywords/research', result, expires_at: new Date(Date.now() + 86400000).toISOString() }).catch(() => {});
+    db.from('cached_results').upsert({ cache_key: cacheKey, endpoint: '/v1/keywords/research', result, expires_at: new Date(Date.now() + 86400000).toISOString() }).then(() => {});
 
     return c.json({ success: true, data: result, meta: { credits_used: 5, credits_remaining: c.get('creditsRemaining') - 5, request_id: randomUUID() } });
   } catch (err: any) {
