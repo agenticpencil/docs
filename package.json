@@ -11,7 +11,6 @@
     "build:platform": "npm -w apps/platform run build"
   },
   "devDependencies": {
-    "turbo": "^2.4.0",
     "typescript": "^5.7.0"
   }
 }

@@ -1,6 +1,3 @@
 {
-  "installCommand": "npm install --prefix .",
-  "buildCommand": "echo ok",
-  "outputDirectory": "public",
   "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
 }
