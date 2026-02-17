@@ -3,7 +3,6 @@ import { cors } from 'hono/cors';
 import { createClient } from '@supabase/supabase-js';
 import { createHash, randomUUID } from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import Stripe from 'stripe';
 
 // ─── Types ───────────────────────────────────────────────
 type Env = {
@@ -31,7 +30,8 @@ function getSupabase() {
 }
 
 function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2025-01-27.acacia' as any });
+  const Stripe = require('stripe');
+  return new Stripe(process.env.STRIPE_SECRET_KEY!);
 }
 
 function getDataForSEOAuth() {
