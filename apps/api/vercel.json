@@ -1,6 +1,7 @@
 {
   "version": 2,
   "rewrites": [
+    { "source": "/debug", "destination": "/api/debug" },
     { "source": "/(.*)", "destination": "/api/index" }
   ],
   "functions": {
