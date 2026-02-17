@@ -525,7 +525,7 @@ app.route('/v1', v1);
 
 // 404
 app.notFound((c) => c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Endpoint not found. See https://docs.agenticpencil.com' } }, 404));
-app.onError((err, c) => { console.error('Error:', err); return c.json({ success: false, error: { code: 'INTERNAL_ERROR', message: 'Unexpected error' } }, 500); });
+app.onError((err, c) => { console.error('Error:', err); return c.json({ success: false, error: { code: 'INTERNAL_ERROR', message: err?.message || 'Unexpected error' } }, 500); });
 
 // ─── Helpers ─────────────────────────────────────────────
 function clusterKeywords(keywords: any[]) {
