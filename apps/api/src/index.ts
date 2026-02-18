@@ -182,16 +182,17 @@ app.post('/v1/auth/register', async (c) => {
 // ─── Billing / Stripe Checkout ──────────────────────────
 app.post('/v1/billing/checkout', authMiddleware, async (c) => {
   const body = await c.req.json().catch(() => null);
-  const plan = body?.plan || 'pro';
+  const plan = body?.plan_id || body?.plan || 'starter';
   const stripe = getStripe();
 
-  const prices: Record<string, { amount: number; name: string }> = {
-    pro: { amount: 4900, name: 'AgenticPencil Pro' },
-    scale: { amount: 19900, name: 'AgenticPencil Scale' },
+  const prices: Record<string, { priceId: string; name: string; amount: number }> = {
+    starter: { priceId: 'price_1T2CHQHIkE0hxXXIlKXtmAaM', name: 'AgenticPencil Starter', amount: 2900 },
+    professional: { priceId: 'price_1T2CHRHIkE0hxXXICt637EFs', name: 'AgenticPencil Professional', amount: 9900 },
+    enterprise: { priceId: 'price_1T2CHRHIkE0hxXXIGmLvKbWh', name: 'AgenticPencil Enterprise', amount: 29900 },
   };
 
   const priceInfo = prices[plan];
-  if (!priceInfo) return c.json({ success: false, error: { code: 'INVALID_PLAN', message: 'Plan must be "pro" or "scale"' } }, 400);
+  if (!priceInfo) return c.json({ success: false, error: { code: 'INVALID_PLAN', message: 'Plan must be "starter", "professional", or "enterprise"' } }, 400);
 
   try {
   const db = getSupabase();
@@ -207,17 +208,9 @@ app.post('/v1/billing/checkout', authMiddleware, async (c) => {
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
     mode: 'subscription',
-    line_items: [{
-      price_data: {
-        currency: 'usd',
-        product_data: { name: priceInfo.name, description: `${plan === 'pro' ? '1,000' : '5,000'} API credits/month` },
-        unit_amount: priceInfo.amount,
-        recurring: { interval: 'month' },
-      },
-      quantity: 1,
-    }],
-    success_url: 'https://platform.agenticpencil.com/billing/success?session_id={CHECKOUT_SESSION_ID}',
-    cancel_url: 'https://platform.agenticpencil.com/billing/cancel',
+    line_items: [{ price: priceInfo.priceId, quantity: 1 }],
+    success_url: 'https://platform.agenticpencil.com/dashboard/billing?success=true&session_id={CHECKOUT_SESSION_ID}',
+    cancel_url: 'https://platform.agenticpencil.com/dashboard/billing?cancelled=true',
     metadata: { user_id: c.get('userId'), plan },
   });
 

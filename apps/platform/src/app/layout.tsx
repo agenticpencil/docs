@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { DM_Sans, Instrument_Serif } from 'next/font/google'
 import { AuthProvider } from '@/hooks/use-auth'
 import { ToastProvider } from '@/components/ui/toast'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-sans' })
+const instrumentSerif = Instrument_Serif({ weight: '400', subsets: ['latin'], variable: '--font-serif' })
 
 export const metadata: Metadata = {
   title: 'AgenticPencil Platform',
@@ -17,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className={inter.className}>
+    <html lang="en" className={`${dmSans.variable} ${instrumentSerif.variable}`}>
+      <body className={dmSans.className}>
         <AuthProvider>
           <ToastProvider>
             {children}

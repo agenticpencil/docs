@@ -6,8 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { getProfile, getApiKeys, getUsageLogs, type ProfileRow, type ApiKeyRow, type UsageLogRow } from '@/lib/api'
 import { useAuth } from '@/hooks/use-auth'
-import { Key, BarChart3, CreditCard, Zap, ArrowRight, Rocket, BookOpen, Terminal } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
+
+function getGreeting(): string {
+  const h = new Date().getHours()
+  if (h < 12) return 'Good morning'
+  if (h < 17) return 'Good afternoon'
+  return 'Good evening'
+}
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -27,188 +34,153 @@ export default function DashboardPage() {
     load()
   }, [])
 
-  const hasKeys = keys.length > 0
+  const planLimits: Record<string, number> = { free: 50, starter: 10000, professional: 50000, enterprise: 200000 }
+  const creditLimit = planLimits[profile?.plan_id || 'free'] || 50
 
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <div className="h-8 bg-[#EDE9E3] rounded w-72 animate-pulse" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[1, 2, 3].map(i => (
-            <Card key={i} className="bg-card/50 border-border">
-              <CardHeader className="animate-pulse">
-                <div className="h-4 bg-muted rounded w-2/3" />
-                <div className="h-8 bg-muted rounded w-1/2 mt-2" />
-              </CardHeader>
-            </Card>
+            <div key={i} className="rounded-xl border border-[#E8E4DE] p-6 animate-pulse" style={{ backgroundColor: '#F5F3EF' }}>
+              <div className="h-4 bg-[#E8E4DE] rounded w-2/3 mb-3" />
+              <div className="h-8 bg-[#E8E4DE] rounded w-1/2" />
+            </div>
           ))}
         </div>
       </div>
     )
   }
 
+  const userName = user?.email ? user.email.split('@')[0] : ''
+
   return (
     <div className="space-y-8">
+      {/* Greeting */}
       <div>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">
-          Welcome back{user?.email ? `, ${user.email.split('@')[0]}` : ''}
-        </p>
+        <h1 className="text-3xl font-semibold text-[#2D2A26]">
+          {getGreeting()}, {userName}
+        </h1>
       </div>
 
-      {/* Getting Started (no API keys yet) */}
-      {!hasKeys && (
-        <Card className="border-emerald-500/30 bg-emerald-500/5">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-                <Rocket className="h-5 w-5 text-emerald-400" />
-              </div>
-              <div>
-                <CardTitle className="text-xl">Get Started with AgenticPencil</CardTitle>
-                <CardDescription>Set up your API key to start using our SEO tools</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="flex gap-3">
-                <div className="flex-shrink-0 h-8 w-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-sm">1</div>
-                <div>
-                  <p className="font-medium">Create an API Key</p>
-                  <p className="text-sm text-muted-foreground mt-0.5">Generate your first key to authenticate requests</p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <div className="flex-shrink-0 h-8 w-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-sm">2</div>
-                <div>
-                  <p className="font-medium">Make your first call</p>
-                  <p className="text-sm text-muted-foreground mt-0.5">Try the keyword research or content audit endpoint</p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <div className="flex-shrink-0 h-8 w-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-sm">3</div>
-                <div>
-                  <p className="font-medium">Scale your SEO</p>
-                  <p className="text-sm text-muted-foreground mt-0.5">Integrate into your workflow and grow</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex gap-3 mt-6">
-              <Link href="/dashboard/keys">
-                <Button className="bg-emerald-600 hover:bg-emerald-700">
-                  <Key className="mr-2 h-4 w-4" />
-                  Create API Key
-                </Button>
-              </Link>
-              <a href="https://docs.agenticpencil.com" target="_blank" rel="noopener noreferrer">
-                <Button variant="outline">
-                  <BookOpen className="mr-2 h-4 w-4" />
-                  Read Docs
-                </Button>
-              </a>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Action buttons */}
+      <div className="flex items-center gap-3">
+        <Link href="/dashboard/keys">
+          <Button className="rounded-lg border border-[#D8D4CE] bg-white text-[#2D2A26] hover:bg-[#F5F3EF] shadow-none font-medium text-sm h-10 px-4" variant="outline">
+            Create API Key
+          </Button>
+        </Link>
+        <a href="https://docs.agenticpencil.com" target="_blank" rel="noopener noreferrer">
+          <Button className="rounded-lg border border-[#D8D4CE] bg-white text-[#2D2A26] hover:bg-[#F5F3EF] shadow-none font-medium text-sm h-10 px-4" variant="outline">
+            Read Docs
+          </Button>
+        </a>
+      </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-card/50 border-border">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Plan</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold capitalize">{profile?.plan_id || 'Free'}</div>
-            <Link href="/dashboard/billing" className="text-xs text-emerald-400 hover:underline flex items-center gap-1 mt-1">
-              Upgrade <ArrowRight className="h-3 w-3" />
-            </Link>
-          </CardContent>
-        </Card>
+        <div className="rounded-xl border border-[#E8E4DE] p-6" style={{ backgroundColor: '#F5F3EF' }}>
+          <p className="text-sm text-[#8B8680] mb-1">Plan</p>
+          <p className="text-2xl font-bold text-[#2D2A26] capitalize">{profile?.plan_id || 'Free'}</p>
+          <Link href="/dashboard/billing" className="text-xs text-[#8B7355] hover:text-[#6B5640] font-medium flex items-center gap-1 mt-2 transition-colors">
+            Upgrade <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
 
-        <Card className="bg-card/50 border-border">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Credits Used</CardTitle>
-            <Zap className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{profile?.credits_used?.toLocaleString() ?? 0}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Resets {profile?.credits_reset_at ? formatDate(profile.credits_reset_at) : 'monthly'}
-            </p>
-          </CardContent>
-        </Card>
+        <div className="rounded-xl border border-[#E8E4DE] p-6" style={{ backgroundColor: '#F5F3EF' }}>
+          <p className="text-sm text-[#8B8680] mb-1">Credits Used</p>
+          <p className="text-2xl font-bold text-[#2D2A26]">
+            {(profile?.credits_used ?? 0).toLocaleString()}
+            <span className="text-sm font-normal text-[#B0AAA2] ml-1">/ {creditLimit.toLocaleString()}</span>
+          </p>
+          <p className="text-xs text-[#B0AAA2] mt-2">
+            Resets {profile?.credits_reset_at ? formatDate(profile.credits_reset_at) : 'monthly'}
+          </p>
+        </div>
 
-        <Card className="bg-card/50 border-border">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">API Keys</CardTitle>
-            <Key className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{keys.length}</div>
-            <Link href="/dashboard/keys" className="text-xs text-emerald-400 hover:underline flex items-center gap-1 mt-1">
-              Manage <ArrowRight className="h-3 w-3" />
-            </Link>
-          </CardContent>
-        </Card>
+        <div className="rounded-xl border border-[#E8E4DE] p-6" style={{ backgroundColor: '#F5F3EF' }}>
+          <p className="text-sm text-[#8B8680] mb-1">API Keys</p>
+          <p className="text-2xl font-bold text-[#2D2A26]">{keys.length}</p>
+          <Link href="/dashboard/keys" className="text-xs text-[#8B7355] hover:text-[#6B5640] font-medium flex items-center gap-1 mt-2 transition-colors">
+            Manage <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
       </div>
-
-      {/* Quick code snippet */}
-      {hasKeys && (
-        <Card className="bg-card/50 border-border">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Terminal className="h-4 w-4 text-emerald-400" />
-              <CardTitle className="text-base">Quick Start</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <pre className="bg-black/50 border border-border rounded-lg p-4 text-sm text-emerald-300 overflow-x-auto">
-{`curl -X POST https://api.agenticpencil.com/v1/keywords/research \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{"keyword": "seo tools", "country": "us"}'`}
-            </pre>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Recent Activity */}
       {logs.length > 0 && (
-        <Card className="bg-card/50 border-border">
-          <CardHeader className="flex flex-row items-center justify-between">
+        <div className="rounded-xl border border-[#E8E4DE]" style={{ backgroundColor: '#F5F3EF' }}>
+          <div className="flex items-center justify-between p-6 pb-3">
             <div>
-              <CardTitle className="text-base">Recent Activity</CardTitle>
-              <CardDescription>Latest API calls</CardDescription>
+              <h2 className="text-base font-semibold text-[#2D2A26]">Recent Activity</h2>
+              <p className="text-sm text-[#B0AAA2]">Latest API calls</p>
             </div>
             <Link href="/dashboard/usage">
-              <Button variant="ghost" size="sm" className="text-emerald-400">
+              <Button variant="ghost" size="sm" className="text-[#8B8680] hover:text-[#2D2A26] hover:bg-[#EDE9E3]">
                 View all <ArrowRight className="ml-1 h-3 w-3" />
               </Button>
             </Link>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {logs.slice(0, 5).map(log => (
-                <div key={log.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                  <div className="flex items-center gap-3">
-                    <div className={`h-2 w-2 rounded-full ${log.status_code < 400 ? 'bg-emerald-400' : 'bg-red-400'}`} />
-                    <div>
-                      <p className="text-sm font-medium">{log.endpoint}</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(log.created_at)}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium">{log.credits_used} credits</p>
-                    <p className="text-xs text-muted-foreground">{log.status_code}</p>
+          </div>
+          <div className="px-6 pb-6">
+            {logs.slice(0, 5).map(log => (
+              <div key={log.id} className="flex items-center justify-between py-3 border-b border-[#E8E4DE] last:border-0">
+                <div className="flex items-center gap-3">
+                  <div className={`h-2 w-2 rounded-full ${log.status_code < 400 ? 'bg-[#7C9A72]' : 'bg-[#C47A6C]'}`} />
+                  <div>
+                    <p className="text-sm font-medium text-[#2D2A26]">{log.endpoint}</p>
+                    <p className="text-xs text-[#B0AAA2]">{formatDate(log.created_at)}</p>
                   </div>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-[#5C5750]">{log.credits_used} credits</p>
+                  <p className="text-xs text-[#B0AAA2]">{log.status_code}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
+
+      {/* Getting Started */}
+      <div className="rounded-xl border border-[#E8E4DE]" style={{ backgroundColor: '#F5F3EF' }}>
+        <div className="p-6">
+          <h2 className="text-base font-semibold text-[#2D2A26] mb-4">Getting Started</h2>
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <span className="text-sm font-medium text-[#B0AAA2] w-4 shrink-0">1.</span>
+              <div>
+                <p className="text-sm font-medium text-[#2D2A26]">Create an API key</p>
+                <p className="text-sm text-[#8B8680] mt-0.5">
+                  Go to <Link href="/dashboard/keys" className="text-[#2D2A26] underline underline-offset-2">API Keys</Link> and generate your first key. Save it securely — it won&apos;t be shown again.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <span className="text-sm font-medium text-[#B0AAA2] w-4 shrink-0">2.</span>
+              <div>
+                <p className="text-sm font-medium text-[#2D2A26]">Make your first API call</p>
+                <p className="text-sm text-[#8B8680] mt-0.5">
+                  Use your key to call any endpoint. Start with{' '}
+                  <a href="https://docs.agenticpencil.com/api-reference/keywords-research" target="_blank" rel="noopener noreferrer" className="text-[#2D2A26] underline underline-offset-2">Keyword Research</a>{' '}
+                  or{' '}
+                  <a href="https://docs.agenticpencil.com/api-reference/content-recommend" target="_blank" rel="noopener noreferrer" className="text-[#2D2A26] underline underline-offset-2">Content Recommendations</a>.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <span className="text-sm font-medium text-[#B0AAA2] w-4 shrink-0">3.</span>
+              <div>
+                <p className="text-sm font-medium text-[#2D2A26]">Read the documentation</p>
+                <p className="text-sm text-[#8B8680] mt-0.5">
+                  Full API reference, authentication guide, and examples at{' '}
+                  <a href="https://docs.agenticpencil.com" target="_blank" rel="noopener noreferrer" className="text-[#2D2A26] underline underline-offset-2">docs.agenticpencil.com</a>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

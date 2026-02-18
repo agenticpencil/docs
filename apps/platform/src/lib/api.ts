@@ -6,7 +6,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.agenti
 
 export interface ApiKeyRow {
   id: string
-  profile_id: string
+  user_id: string
   key_prefix: string
   is_active: boolean
   created_at: string
@@ -62,21 +62,77 @@ async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise
 // ── Real API calls ───────────────────────────────────
 
 export async function getUsage(): Promise<UsageData> {
-  return apiFetch<UsageData>('/v1/usage')
+  const res = await apiFetch<{ success: boolean; data: UsageData }>('/v1/usage')
+  return res.data
 }
 
 export async function createCheckoutSession(planId: string): Promise<{ checkout_url: string }> {
-  return apiFetch<{ checkout_url: string }>('/v1/billing/checkout', {
+  // Call our Next.js API route which has the Stripe secret key
+  const res = await fetch('/api/checkout', {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ plan_id: planId }),
   })
+  if (!res.ok) {
+    const body = await res.text().catch(() => '')
+    throw new Error(body || 'Checkout failed')
+  }
+  const data = await res.json()
+  return { checkout_url: data.checkout_url }
 }
 
 export async function registerApiKey(email: string): Promise<{ api_key: string }> {
-  return apiFetch<{ api_key: string }>('/v1/auth/register', {
-    method: 'POST',
-    body: JSON.stringify({ email }),
-  })
+  try {
+    const res = await apiFetch<{ success: boolean; data: { api_key: string } }>('/v1/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    })
+    return { api_key: res.data.api_key }
+  } catch (err: any) {
+    // If account already exists, create a new key directly via Supabase
+    if (err.message?.includes('ALREADY_EXISTS')) {
+      return createNewApiKey()
+    }
+    throw err
+  }
+}
+
+async function createNewApiKey(): Promise<{ api_key: string }> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  // Get profile
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('email', user.email)
+    .single()
+
+  if (!profile) throw new Error('Profile not found')
+
+  // Generate new API key
+  const key = `ap_${crypto.randomUUID().replace(/-/g, '')}`
+  const keyPrefix = key.substring(0, 12) + '...'
+
+  // Hash the key for storage
+  const encoder = new TextEncoder()
+  const data = encoder.encode(key)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const keyHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+
+  const { error } = await supabase
+    .from('api_keys')
+    .insert({
+      user_id: profile.id,
+      key_hash: keyHash,
+      key_prefix: keyPrefix,
+      is_active: true,
+    })
+
+  if (error) throw new Error(`Failed to create key: ${error.message}`)
+
+  return { api_key: key }
 }
 
 // ── Supabase direct queries (RLS-protected) ──────────

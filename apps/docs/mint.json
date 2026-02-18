@@ -82,7 +82,11 @@
     "linkedin": "https://linkedin.com/company/agenticpencil"
   },
   "api": {
-    "baseUrl": "https://api.agenticpencil.com"
+    "baseUrl": "https://api.agenticpencil.com",
+    "auth": {
+      "method": "bearer",
+      "name": "Authorization"
+    }
   },
   "theme": "dark",
   "modeToggle": {
