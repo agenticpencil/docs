@@ -1,0 +1,80 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "AgenticPencil",
+  "logo": {
+    "dark": "/favicon.svg",
+    "light": "/favicon.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#10B981",
+    "light": "#10B981",
+    "dark": "#10B981"
+  },
+  "topbar": {
+    "links": [
+      {
+        "label": "Platform",
+        "url": "https://platform.agenticpencil.com"
+      },
+      {
+        "label": "Website",
+        "url": "https://agenticpencil.com"
+      }
+    ],
+    "cta": {
+      "label": "Get API Key",
+      "url": "https://platform.agenticpencil.com/dashboard/keys"
+    }
+  },
+  "tabs": [
+    {
+      "tab": "API Reference",
+      "url": "api-reference"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "authentication"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference/keywords-research",
+        "api-reference/keywords-gaps",
+        "api-reference/content-audit",
+        "api-reference/content-recommend",
+        "api-reference/usage",
+        "api-reference/register",
+        "api-reference/billing-checkout"
+      ]
+    },
+    {
+      "group": "Resources",
+      "pages": [
+        "rate-limits",
+        "pricing",
+        "errors"
+      ]
+    }
+  ],
+  "footer": {
+    "socials": {
+      "x": "https://twitter.com/agenticpencil",
+      "github": "https://github.com/agenticpencil",
+      "linkedin": "https://linkedin.com/company/agenticpencil"
+    }
+  },
+  "api": {
+    "baseUrl": "https://api.agenticpencil.com"
+  },
+  "appearance": {
+    "default": "dark"
+  }
+}
