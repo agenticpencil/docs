@@ -1,10 +1,11 @@
 ---
-title: "User Registration"
+title: "Register"
 api: "POST https://api.agenticpencil.com/v1/auth/register"
-description: "Register a new user account and receive initial API access"
+description: "Register for an API key"
+auth: none
 ---
 
-Create a new AgenticPencil account programmatically. Perfect for onboarding users directly from your application or for automated account creation workflows.
+Create an account and get your API key. No authentication required.
 
 <RequestExample>
 
@@ -12,369 +13,43 @@ Create a new AgenticPencil account programmatically. Perfect for onboarding user
 curl -X POST "https://api.agenticpencil.com/v1/auth/register" \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "user@example.com",
-    "password": "SecurePassword123!",
-    "name": "John Doe",
-    "company": "Example Corp"
+    "email": "you@example.com",
+    "name": "My App"
   }'
-```
-
-```python Python
-import requests
-
-url = "https://api.agenticpencil.com/v1/auth/register"
-data = {
-    "email": "user@example.com",
-    "password": "SecurePassword123!",
-    "name": "John Doe",
-    "company": "Example Corp"
-}
-
-response = requests.post(url, json=data)
-result = response.json()
-```
-
-```javascript Node.js
-const axios = require('axios');
-
-const response = await axios.post(
-  'https://api.agenticpencil.com/v1/auth/register',
-  {
-    email: 'user@example.com',
-    password: 'SecurePassword123!',
-    name: 'John Doe',
-    company: 'Example Corp'
-  }
-);
 ```
 
 </RequestExample>
 
-## Authentication
-
-<Info>
-  **No authentication required** - This is an open endpoint for account creation
-</Info>
-
 ## Request Body
 
 <ParamField body="email" type="string" required>
-  Valid email address for the new account
+  Your email address
 </ParamField>
 
-<ParamField body="password" type="string" required>
-  Password meeting security requirements (min 8 characters, 1 uppercase, 1 lowercase, 1 number)
-</ParamField>
-
-<ParamField body="name" type="string" required>
-  Full name of the user
-</ParamField>
-
-<ParamField body="company" type="string">
-  Company or organization name (optional)
-</ParamField>
-
-<ParamField body="referral_code" type="string">
-  Referral code for bonus credits (optional)
+<ParamField body="name" type="string">
+  Name for your API key (default: "Default")
 </ParamField>
 
 ## Response
-
-<ResponseField name="status" type="string">
-  Status of the request ("success" or "error")
-</ResponseField>
-
-<ResponseField name="data" type="object">
-  <Expandable title="data object">
-    <ResponseField name="user_id" type="string">
-      Unique user identifier
-    </ResponseField>
-    <ResponseField name="email" type="string">
-      Registered email address
-    </ResponseField>
-    <ResponseField name="name" type="string">
-      User's full name
-    </ResponseField>
-    <ResponseField name="verification_required" type="boolean">
-      Whether email verification is required before API access
-    </ResponseField>
-    <ResponseField name="api_key" type="string">
-      Initial API key (if verification not required)
-    </ResponseField>
-    <ResponseField name="plan" type="object">
-      <Expandable title="plan object">
-        <ResponseField name="type" type="string">
-          Default plan type ("free")
-        </ResponseField>
-        <ResponseField name="credits_monthly" type="integer">
-          Monthly credit allocation
-        </ResponseField>
-        <ResponseField name="rate_limit" type="integer">
-          Requests per minute limit
-        </ResponseField>
-      </Expandable>
-    </ResponseField>
-    <ResponseField name="next_steps" type="array">
-      Array of recommended next actions for the user
-    </ResponseField>
-  </Expandable>
-</ResponseField>
 
 <ResponseExample>
 
 ```json Success Response
 {
-  "status": "success",
+  "success": true,
   "data": {
-    "user_id": "usr_1234567890abcdef",
-    "email": "user@example.com",
-    "name": "John Doe",
-    "verification_required": true,
-    "plan": {
-      "type": "free",
-      "credits_monthly": 50,
-      "rate_limit": 10
-    },
-    "next_steps": [
-      "Check your email for verification link",
-      "Complete email verification to activate your account",
-      "Visit platform.agenticpencil.com to access your dashboard",
-      "Generate additional API keys if needed"
-    ]
+    "api_key": "ap_abc123...",
+    "key_prefix": "ap_abc1",
+    "plan": "free",
+    "credits": 50,
+    "rate_limit": "10 requests/minute",
+    "warning": "⚠️ Save this key — it cannot be retrieved again."
   }
-}
-```
-
-```json Success Response (No Verification Required)
-{
-  "status": "success",
-  "data": {
-    "user_id": "usr_1234567890abcdef",
-    "email": "user@example.com",
-    "name": "John Doe",
-    "verification_required": false,
-    "api_key": "ap_abcdef1234567890ghijklmnopqrstuv",
-    "plan": {
-      "type": "free",
-      "credits_monthly": 50,
-      "rate_limit": 10
-    },
-    "next_steps": [
-      "Start making API calls with your new API key",
-      "Visit platform.agenticpencil.com to access your dashboard",
-      "Consider upgrading to Pro for higher limits"
-    ]
-  }
-}
-```
-
-```json Error Response
-{
-  "status": "error",
-  "error": "Email already registered",
-  "message": "An account with this email address already exists",
-  "code": "EMAIL_EXISTS"
 }
 ```
 
 </ResponseExample>
 
-## Credit Cost
-
-<Info>
-  **Credit Cost**: FREE - Registration doesn't consume any credits
-</Info>
-
-Account registration is completely free and provides immediate access to the free tier.
-
-## Password Requirements
-
-Your password must meet these security requirements:
-
-<CardGroup cols={2}>
-  <Card
-    title="Length"
-    icon="ruler"
-  >
-    Minimum 8 characters long
-  </Card>
-  <Card
-    title="Uppercase"
-    icon="arrow-up"
-  >
-    At least 1 uppercase letter (A-Z)
-  </Card>
-  <Card
-    title="Lowercase"
-    icon="arrow-down"
-  >
-    At least 1 lowercase letter (a-z)
-  </Card>
-  <Card
-    title="Numbers"
-    icon="hashtag"
-  >
-    At least 1 number (0-9)
-  </Card>
-</CardGroup>
-
-## Email Verification
-
-<AccordionGroup>
-  <Accordion title="When is verification required?">
-    Email verification is required for:
-    - New account registrations
-    - Email addresses from certain domains (for security)
-    - Accounts requesting higher initial limits
-  </Accordion>
-
-  <Accordion title="Verification process">
-    1. User registers with this endpoint
-    2. Verification email sent automatically
-    3. User clicks verification link in email
-    4. Account becomes fully active
-    5. API key becomes available in dashboard
-  </Accordion>
-
-  <Accordion title="What if verification email doesn't arrive?">
-    Users can:
-    - Check spam/junk folders
-    - Request a new verification email from the dashboard
-    - Contact support if issues persist
-  </Accordion>
-
-  <Accordion title="API access before verification">
-    - If `verification_required` is true: No API access until verified
-    - If `verification_required` is false: Immediate API access with returned key
-  </Accordion>
-</AccordionGroup>
-
-## Free Tier Benefits
-
-New accounts automatically get:
-
-<CardGroup cols={3}>
-  <Card
-    title="50 Credits/Month"
-    icon="coins"
-  >
-    Enough for ~10 keyword research calls or 5 content audits monthly
-  </Card>
-  <Card
-    title="10 Requests/Minute"
-    icon="clock"
-  >
-    Sufficient rate limit for testing and small projects
-  </Card>
-  <Card
-    title="Full API Access"
-    icon="key"
-  >
-    Access to all endpoints and features
-  </Card>
-</CardGroup>
-
-## Common Registration Errors
-
-<AccordionGroup>
-  <Accordion title="EMAIL_EXISTS - Email already registered">
-    ```json
-    {
-      "status": "error",
-      "error": "Email already registered",
-      "message": "An account with this email address already exists",
-      "code": "EMAIL_EXISTS"
-    }
-    ```
-    **Solution**: Use a different email or try logging into the existing account
-  </Accordion>
-
-  <Accordion title="WEAK_PASSWORD - Password doesn't meet requirements">
-    ```json
-    {
-      "status": "error",
-      "error": "Password too weak",
-      "message": "Password must be at least 8 characters with uppercase, lowercase, and number",
-      "code": "WEAK_PASSWORD"
-    }
-    ```
-    **Solution**: Create a stronger password meeting all requirements
-  </Accordion>
-
-  <Accordion title="INVALID_EMAIL - Email format invalid">
-    ```json
-    {
-      "status": "error",
-      "error": "Invalid email format",
-      "message": "Please provide a valid email address",
-      "code": "INVALID_EMAIL"
-    }
-    ```
-    **Solution**: Check email format and ensure it's valid
-  </Accordion>
-
-  <Accordion title="RATE_LIMITED - Too many registration attempts">
-    ```json
-    {
-      "status": "error",
-      "error": "Too many registration attempts",
-      "message": "Please wait before attempting another registration",
-      "code": "RATE_LIMITED"
-    }
-    ```
-    **Solution**: Wait 15 minutes before trying again
-  </Accordion>
-</AccordionGroup>
-
-## Use Cases
-
-<CardGroup cols={2}>
-  <Card
-    title="SaaS Onboarding"
-    icon="rocket"
-  >
-    Integrate user registration into your application's signup flow
-  </Card>
-  <Card
-    title="Batch Account Creation"
-    icon="users"
-  >
-    Create multiple accounts for team members or clients
-  </Card>
-  <Card
-    title="Automated Workflows"
-    icon="robot"
-  >
-    Include account creation in automated onboarding processes
-  </Card>
-  <Card
-    title="Partner Integration"
-    icon="handshake"
-  >
-    Enable partners to create accounts through your platform
-  </Card>
-</CardGroup>
-
-## Next Steps After Registration
-
-<Steps>
-  <Step title="Email Verification">
-    If required, complete email verification through the link sent to the user's inbox
-  </Step>
-  <Step title="Dashboard Access">
-    Visit [platform.agenticpencil.com](https://platform.agenticpencil.com) to access the full dashboard
-  </Step>
-  <Step title="API Key Management">
-    Generate additional API keys or manage existing ones through the dashboard
-  </Step>
-  <Step title="First API Call">
-    Test API access with a simple call to the usage endpoint
-  </Step>
-  <Step title="Plan Upgrade">
-    Consider upgrading to Pro or Scale plans for higher limits and priority support
-  </Step>
-</Steps>
-
-<Tip>
-  **For the best user experience**, guide new users to verify their email immediately after registration to ensure full API access.
-</Tip>
+<Warning>
+  Save your API key immediately — it cannot be retrieved after this response.
+</Warning>

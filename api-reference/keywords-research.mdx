@@ -4,7 +4,7 @@ api: "POST https://api.agenticpencil.com/v1/keywords/research"
 description: "Research high-opportunity keywords for a given domain and topic"
 ---
 
-Research relevant keywords for your domain and topic, complete with search volume, competition analysis, and opportunity scoring.
+Discover keyword opportunities with clustering, search volume, difficulty scores, and intent analysis.
 
 <RequestExample>
 
@@ -13,9 +13,9 @@ curl -X POST "https://api.agenticpencil.com/v1/keywords/research" \
   -H "Authorization: Bearer ap_your_api_key_here" \
   -H "Content-Type: application/json" \
   -d '{
-    "domain": "example.com",
-    "topic": "sustainable fashion",
-    "country": "US",
+    "domain": "sonant.ai",
+    "topic": "ai receptionist",
+    "country": "us",
     "limit": 20
   }'
 ```
@@ -23,46 +23,22 @@ curl -X POST "https://api.agenticpencil.com/v1/keywords/research" \
 ```python Python
 import requests
 
-url = "https://api.agenticpencil.com/v1/keywords/research"
-headers = {
-    "Authorization": "Bearer ap_your_api_key_here",
-    "Content-Type": "application/json"
-}
-data = {
-    "domain": "example.com",
-    "topic": "sustainable fashion",
-    "country": "US",
-    "limit": 20
-}
-
-response = requests.post(url, headers=headers, json=data)
-result = response.json()
+response = requests.post(
+    "https://api.agenticpencil.com/v1/keywords/research",
+    headers={"Authorization": "Bearer ap_your_api_key_here"},
+    json={"domain": "sonant.ai", "topic": "ai receptionist", "country": "us", "limit": 20}
+)
 ```
 
 ```javascript Node.js
-const axios = require('axios');
-
-const response = await axios.post(
-  'https://api.agenticpencil.com/v1/keywords/research',
-  {
-    domain: 'example.com',
-    topic: 'sustainable fashion',
-    country: 'US',
-    limit: 20
-  },
-  {
-    headers: {
-      'Authorization': 'Bearer ap_your_api_key_here',
-      'Content-Type': 'application/json'
-    }
-  }
-);
+const response = await fetch('https://api.agenticpencil.com/v1/keywords/research', {
+  method: 'POST',
+  headers: { 'Authorization': 'Bearer ap_your_api_key_here', 'Content-Type': 'application/json' },
+  body: JSON.stringify({ domain: 'sonant.ai', topic: 'ai receptionist', country: 'us', limit: 20 })
+});
 ```
 
 </RequestExample>
-
-## Authentication
-
 
 ## Request Body
 
@@ -70,165 +46,63 @@ const response = await axios.post(
   Your website domain (e.g., "example.com")
 </ParamField>
 
-<ParamField body="topic" type="string" required>
-  The topic or niche you want to research keywords for
+<ParamField body="topic" type="string">
+  Topic or niche to research keywords for
 </ParamField>
 
-<ParamField body="country" type="string" required>
-  Two-letter country code for geo-targeted results (e.g., "US", "UK", "DE")
+<ParamField body="keywords" type="string[]">
+  Seed keywords to use instead of topic
+</ParamField>
+
+<ParamField body="country" type="string">
+  Two-letter country code (default: "us"). Supported: us, uk, ca, au, de, fr, es, it, br, pt, nl, in
+</ParamField>
+
+<ParamField body="language" type="string">
+  Language code (default: "en"). Supported: en, de, fr, es, it, pt, nl, tr
 </ParamField>
 
 <ParamField body="limit" type="integer">
-  Maximum number of keywords to return (1-100, default: 50)
+  Maximum keywords per source (default: 50)
 </ParamField>
 
 ## Response
-
-<ResponseField name="status" type="string">
-  Status of the request ("success" or "error")
-</ResponseField>
-
-<ResponseField name="data" type="object">
-  <Expandable title="data object">
-    <ResponseField name="keywords" type="array">
-      Array of keyword objects with research data
-      <Expandable title="keyword object">
-        <ResponseField name="keyword" type="string">
-          The keyword phrase
-        </ResponseField>
-        <ResponseField name="search_volume" type="integer">
-          Average monthly search volume
-        </ResponseField>
-        <ResponseField name="competition" type="string">
-          Competition level: "low", "medium", or "high"
-        </ResponseField>
-        <ResponseField name="cpc" type="number">
-          Cost per click in USD
-        </ResponseField>
-        <ResponseField name="trend" type="string">
-          Search trend: "increasing", "decreasing", or "stable"
-        </ResponseField>
-        <ResponseField name="difficulty" type="integer">
-          SEO difficulty score (1-100, higher is more difficult)
-        </ResponseField>
-        <ResponseField name="opportunity_score" type="integer">
-          AgenticPencil opportunity score (1-100, higher is better)
-        </ResponseField>
-      </Expandable>
-    </ResponseField>
-    <ResponseField name="total_found" type="integer">
-      Total number of keywords found
-    </ResponseField>
-    <ResponseField name="credits_used" type="integer">
-      Number of credits consumed by this request
-    </ResponseField>
-  </Expandable>
-</ResponseField>
-
-<ResponseField name="credits_remaining" type="integer">
-  Your remaining credit balance
-</ResponseField>
 
 <ResponseExample>
 
 ```json Success Response
 {
-  "status": "success",
+  "success": true,
   "data": {
-    "keywords": [
+    "domain": "sonant.ai",
+    "topic": "ai receptionist",
+    "country": "us",
+    "clusters": [
       {
-        "keyword": "sustainable fashion brands",
-        "search_volume": 14500,
-        "competition": "medium",
-        "cpc": 1.45,
-        "trend": "increasing",
-        "difficulty": 52,
-        "opportunity_score": 78
-      },
-      {
-        "keyword": "eco friendly clothing",
-        "search_volume": 22000,
-        "competition": "high",
-        "cpc": 1.85,
-        "trend": "stable",
-        "difficulty": 68,
-        "opportunity_score": 65
-      },
-      {
-        "keyword": "sustainable fashion tips",
-        "search_volume": 8900,
-        "competition": "low",
-        "cpc": 0.95,
-        "trend": "increasing",
-        "difficulty": 35,
-        "opportunity_score": 85
+        "cluster_name": "ai receptionist",
+        "total_volume": 4500,
+        "avg_difficulty": 35,
+        "keywords": [
+          {
+            "keyword": "ai receptionist",
+            "search_volume": 2400,
+            "keyword_difficulty": 32,
+            "cpc": 5.2,
+            "search_intent": "commercial"
+          }
+        ]
       }
     ],
-    "total_found": 3,
-    "credits_used": 5
+    "total_keywords": 45
   },
-  "credits_remaining": 245
-}
-```
-
-```json Error Response
-{
-  "status": "error",
-  "error": "Invalid domain format",
-  "message": "Domain must be in format 'example.com' without protocol",
-  "code": "INVALID_DOMAIN_FORMAT"
+  "meta": {
+    "credits_used": 5,
+    "credits_remaining": 995,
+    "request_id": "abc-123"
+  }
 }
 ```
 
 </ResponseExample>
 
-## Credit Cost
-
-<Info>
-  **Credit Cost**: 5 credits per request
-</Info>
-
-This endpoint consumes 5 credits regardless of the number of keywords returned (up to your specified limit).
-
-## Use Cases
-
-<CardGroup cols={2}>
-  <Card
-    title="Content Planning"
-    icon="calendar-days"
-  >
-    Discover keywords to target in your content calendar
-  </Card>
-  <Card
-    title="SEO Strategy"
-    icon="chart-line"
-  >
-    Build keyword clusters for comprehensive SEO campaigns
-  </Card>
-  <Card
-    title="Market Research"
-    icon="magnifying-glass"
-  >
-    Understand search demand in your industry
-  </Card>
-  <Card
-    title="Competitive Analysis"
-    icon="users"
-  >
-    Find opportunities your competitors might be missing
-  </Card>
-</CardGroup>
-
-## Tips for Better Results
-
-<Tip>
-  **Be Specific**: More specific topics yield better, more targeted keyword suggestions than broad, generic terms.
-</Tip>
-
-<Tip>
-  **Use Your Domain**: Including your actual domain helps our algorithm provide more relevant keyword suggestions based on your site's context.
-</Tip>
-
-<Tip>
-  **Consider Geography**: Different countries have different search patterns. Always specify the country code for your target audience.
-</Tip>
+<Info>**Credit Cost**: 5 credits per request</Info>

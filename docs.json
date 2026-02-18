@@ -37,6 +37,7 @@
           {
             "group": "Endpoints",
             "pages": [
+              "api-reference/content-map",
               "api-reference/keywords-research",
               "api-reference/keywords-gaps",
               "api-reference/content-audit",
