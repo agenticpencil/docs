@@ -75,7 +75,12 @@
     }
   },
   "api": {
-    "baseUrl": "https://api.agenticpencil.com"
+    "baseUrl": "https://api.agenticpencil.com",
+    "auth": {
+      "method": "bearer",
+      "name": "Authorization",
+      "inputPrefix": "Bearer "
+    }
   },
   "appearance": {
     "default": "dark"
