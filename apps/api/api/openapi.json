@@ -1,0 +1,187 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "AgenticPencil API",
+    "description": "AI content strategy and SEO intelligence API. Returns prioritized content plans, keyword research, competitor analysis, and sitemap audits.",
+    "version": "1.0.0",
+    "contact": { "email": "goncalo@rankcite.com", "url": "https://agenticpencil.com" }
+  },
+  "servers": [{ "url": "https://api.agenticpencil.com", "description": "Production" }],
+  "security": [{ "BearerAuth": [] }],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API key starting with ap_. Get one at https://platform.agenticpencil.com"
+      }
+    }
+  },
+  "paths": {
+    "/v1/content/recommend": {
+      "post": {
+        "operationId": "getContentRecommendations",
+        "summary": "Get content recommendations with SEO outlines",
+        "description": "Analyzes your domain, competitors, and keyword landscape to return a prioritized content plan with titles, keywords, outlines, and opportunity scores. Includes cannibalization detection.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["domain"],
+                "properties": {
+                  "domain": { "type": "string", "description": "Target domain (e.g. sonant.ai)" },
+                  "brand_context": { "type": "string", "description": "Brief description of the brand/product for smarter recommendations" },
+                  "competitors": { "type": "array", "items": { "type": "string" }, "description": "Competitor domains to analyze gaps" },
+                  "focus_topics": { "type": "array", "items": { "type": "string" }, "description": "Topics to focus on (e.g. ['ai receptionist', 'insurance automation'])" },
+                  "country": { "type": "string", "default": "US", "description": "Two-letter country code" },
+                  "limit": { "type": "integer", "default": 20, "description": "Max recommendations (1-50)" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Content plan with prioritized recommendations" },
+          "401": { "description": "Unauthorized — invalid or missing API key" },
+          "402": { "description": "Insufficient credits" }
+        }
+      }
+    },
+    "/v1/keywords/research": {
+      "post": {
+        "operationId": "keywordResearch",
+        "summary": "Research keywords with clustering",
+        "description": "Returns keyword clusters for a domain and topic, with search volume, difficulty, and opportunity scores.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["domain", "topic"],
+                "properties": {
+                  "domain": { "type": "string" },
+                  "topic": { "type": "string", "description": "Topic to research keywords for" },
+                  "country": { "type": "string", "default": "US" },
+                  "limit": { "type": "integer", "default": 50 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Keyword clusters with volumes and difficulty" } }
+      }
+    },
+    "/v1/keywords/gaps": {
+      "post": {
+        "operationId": "keywordGaps",
+        "summary": "Find keyword gaps vs competitors",
+        "description": "Keywords that competitors rank for but you don't.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["domain"],
+                "properties": {
+                  "domain": { "type": "string" },
+                  "competitors": { "type": "array", "items": { "type": "string" } },
+                  "country": { "type": "string", "default": "US" },
+                  "limit": { "type": "integer", "default": 50 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Keywords your competitors rank for that you don't" } }
+      }
+    },
+    "/v1/content/audit": {
+      "post": {
+        "operationId": "contentAudit",
+        "summary": "Audit sitemap with cannibalization detection",
+        "description": "Crawls your sitemap and returns page metadata. Detects cannibalization issues.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["domain"],
+                "properties": {
+                  "domain": { "type": "string" },
+                  "sitemap_url": { "type": "string", "description": "Custom sitemap URL" },
+                  "max_pages": { "type": "integer", "default": 100 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Sitemap audit with page metadata" } }
+      }
+    },
+    "/v1/content-map": {
+      "post": {
+        "operationId": "getContentMap",
+        "summary": "Full content strategy in one call",
+        "description": "The mega-endpoint: combines keyword research, competitor gaps, content audit, and content recommendations into a single response. This is the recommended endpoint for AI agents.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["domain"],
+                "properties": {
+                  "domain": { "type": "string" },
+                  "brand_context": { "type": "string" },
+                  "competitors": { "type": "array", "items": { "type": "string" } },
+                  "focus_topics": { "type": "array", "items": { "type": "string" } },
+                  "country": { "type": "string", "default": "US" },
+                  "limit": { "type": "integer", "default": 20 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Complete content map with audit, keywords, gaps, and recommendations" }
+        }
+      }
+    },
+    "/v1/usage": {
+      "get": {
+        "operationId": "getUsage",
+        "summary": "Check credits and usage",
+        "description": "Returns current plan, credits used, and recent API call history.",
+        "responses": { "200": { "description": "Usage data" } }
+      }
+    },
+    "/v1/auth/register": {
+      "post": {
+        "operationId": "register",
+        "summary": "Register and get an API key",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "name": { "type": "string", "description": "Optional key name" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "API key created" } }
+      }
+    }
+  }
+}
