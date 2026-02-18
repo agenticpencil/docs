@@ -1,88 +1,72 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Copy, Plus, Trash2 } from 'lucide-react'
+import { Copy, Plus, Trash2, Key, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { apiClient, type ApiKeyData } from '@/lib/api'
+import { getApiKeys, deactivateApiKey, registerApiKey, type ApiKeyRow } from '@/lib/api'
+import { useAuth } from '@/hooks/use-auth'
 import { formatDate } from '@/lib/utils'
 
 export default function ApiKeysPage() {
-  const [apiKeys, setApiKeys] = useState<ApiKeyData[]>([])
+  const { user } = useAuth()
+  const [apiKeys, setApiKeys] = useState<ApiKeyRow[]>([])
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
-  const [newKeyName, setNewKeyName] = useState('')
   const [newApiKey, setNewApiKey] = useState('')
   const [showNewKeyDialog, setShowNewKeyDialog] = useState(false)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const [error, setError] = useState('')
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-    loadApiKeys()
+    loadKeys()
   }, [])
 
-  const loadApiKeys = async () => {
-    try {
-      const keys = await apiClient.getApiKeys()
-      setApiKeys(keys)
-    } catch (error) {
-      console.error('Error loading API keys:', error)
-    } finally {
-      setLoading(false)
-    }
+  const loadKeys = async () => {
+    const keys = await getApiKeys()
+    setApiKeys(keys)
+    setLoading(false)
   }
 
-  const createApiKey = async () => {
-    if (!newKeyName.trim()) return
-
+  const handleCreate = async () => {
+    if (!user?.email) return
     setCreating(true)
+    setError('')
     try {
-      const result = await apiClient.createApiKey(newKeyName.trim())
-      setNewApiKey(result.key)
-      setApiKeys(prev => [...prev, result.key_data])
+      const result = await registerApiKey(user.email)
+      setNewApiKey(result.api_key)
       setShowCreateDialog(false)
       setShowNewKeyDialog(true)
-      setNewKeyName('')
-      
-      // Store the first API key in localStorage
-      if (apiKeys.length === 0) {
-        apiClient.setApiKey(result.key)
-      }
-    } catch (error) {
-      console.error('Error creating API key:', error)
+      await loadKeys()
+    } catch (err: any) {
+      setError(err.message || 'Failed to create API key')
     } finally {
       setCreating(false)
     }
   }
 
-  const revokeApiKey = async (keyId: string) => {
-    try {
-      await apiClient.revokeApiKey(keyId)
-      setApiKeys(prev => prev.filter(key => key.id !== keyId))
-    } catch (error) {
-      console.error('Error revoking API key:', error)
-    }
+  const handleRevoke = async (keyId: string) => {
+    const ok = await deactivateApiKey(keyId)
+    if (ok) setApiKeys(prev => prev.filter(k => k.id !== keyId))
   }
 
   const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      // You could add a toast notification here
-    } catch (error) {
-      console.error('Failed to copy:', error)
-    }
+    await navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   if (loading) {
     return (
       <div className="space-y-6">
         <h1 className="text-3xl font-bold">API Keys</h1>
-        <Card>
+        <Card className="bg-card/50 border-border">
           <CardHeader className="animate-pulse">
-            <div className="h-6 bg-muted rounded w-1/4"></div>
-            <div className="h-4 bg-muted rounded w-2/3"></div>
+            <div className="h-6 bg-muted rounded w-1/4" />
+            <div className="h-4 bg-muted rounded w-2/3 mt-2" />
           </CardHeader>
         </Card>
       </div>
@@ -92,58 +76,57 @@ export default function ApiKeysPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">API Keys</h1>
+        <div>
+          <h1 className="text-3xl font-bold">API Keys</h1>
+          <p className="text-muted-foreground mt-1">Manage your API authentication keys</p>
+        </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="bg-emerald-600 hover:bg-emerald-700">
               <Plus className="mr-2 h-4 w-4" />
               Create API Key
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="bg-card border-border">
             <DialogHeader>
               <DialogTitle>Create New API Key</DialogTitle>
               <DialogDescription>
-                Give your API key a descriptive name to help you identify it later.
+                A new API key will be generated for your account ({user?.email}).
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
-              <Input
-                placeholder="API Key Name"
-                value={newKeyName}
-                onChange={(e) => setNewKeyName(e.target.value)}
-                disabled={creating}
-              />
-            </div>
+            {error && (
+              <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                {error}
+              </div>
+            )}
             <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setShowCreateDialog(false)}
-                disabled={creating}
-              >
+              <Button variant="outline" onClick={() => setShowCreateDialog(false)} disabled={creating}>
                 Cancel
               </Button>
-              <Button onClick={createApiKey} disabled={creating || !newKeyName.trim()}>
-                {creating ? 'Creating...' : 'Create Key'}
+              <Button onClick={handleCreate} disabled={creating} className="bg-emerald-600 hover:bg-emerald-700">
+                {creating ? 'Creating...' : 'Generate Key'}
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
 
-      <Card>
+      <Card className="bg-card/50 border-border">
         <CardHeader>
           <CardTitle>Your API Keys</CardTitle>
           <CardDescription>
-            Manage your API keys for accessing the AgenticPencil API.
-            Keep your keys secure and never share them publicly.
+            Keep your keys secure. Never share them publicly or commit them to source control.
           </CardDescription>
         </CardHeader>
         <CardContent>
           {apiKeys.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground mb-4">No API keys found.</p>
-              <Button onClick={() => setShowCreateDialog(true)}>
+            <div className="text-center py-12">
+              <div className="h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
+                <Key className="h-6 w-6 text-emerald-400" />
+              </div>
+              <p className="text-muted-foreground mb-4">No API keys yet</p>
+              <Button onClick={() => setShowCreateDialog(true)} className="bg-emerald-600 hover:bg-emerald-700">
                 <Plus className="mr-2 h-4 w-4" />
                 Create your first API key
               </Button>
@@ -151,45 +134,36 @@ export default function ApiKeysPage() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Key</TableHead>
+                <TableRow className="border-border hover:bg-transparent">
+                  <TableHead>Key Prefix</TableHead>
                   <TableHead>Created</TableHead>
-                  <TableHead>Last Used</TableHead>
-                  <TableHead className="w-[100px]">Actions</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="w-[80px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {apiKeys.map((apiKey) => (
-                  <TableRow key={apiKey.id}>
-                    <TableCell className="font-medium">{apiKey.name}</TableCell>
+                {apiKeys.map((key) => (
+                  <TableRow key={key.id} className="border-border">
                     <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <code className="text-sm bg-muted px-2 py-1 rounded">
-                          {apiKey.key_prefix}...
-                        </code>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => copyToClipboard(apiKey.key_prefix)}
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <code className="text-sm bg-black/30 px-2 py-1 rounded text-emerald-300">
+                        {key.key_prefix}••••••••
+                      </code>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {formatDate(apiKey.created_at)}
+                      {formatDate(key.created_at)}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {apiKey.last_used ? formatDate(apiKey.last_used) : 'Never'}
+                    <TableCell>
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                        Active
+                      </span>
                     </TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive"
-                        onClick={() => revokeApiKey(apiKey.id)}
+                        className="h-8 w-8 text-muted-foreground hover:text-red-400"
+                        onClick={() => handleRevoke(key.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -202,31 +176,29 @@ export default function ApiKeysPage() {
         </CardContent>
       </Card>
 
-      {/* New API Key Dialog */}
+      {/* New key reveal dialog */}
       <Dialog open={showNewKeyDialog} onOpenChange={setShowNewKeyDialog}>
-        <DialogContent>
+        <DialogContent className="bg-card border-border">
           <DialogHeader>
-            <DialogTitle>API Key Created</DialogTitle>
+            <DialogTitle>🎉 API Key Created</DialogTitle>
             <DialogDescription>
-              Your new API key has been created. Copy it now as it won't be shown again.
+              Copy your key now — it won't be shown again.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="p-4 bg-muted rounded-lg">
-              <code className="text-sm break-all">{newApiKey}</code>
+            <div className="p-4 bg-black/40 border border-border rounded-lg">
+              <code className="text-sm text-emerald-300 break-all">{newApiKey}</code>
             </div>
             <Button
               onClick={() => copyToClipboard(newApiKey)}
-              className="w-full"
+              className="w-full bg-emerald-600 hover:bg-emerald-700"
             >
               <Copy className="mr-2 h-4 w-4" />
-              Copy to Clipboard
+              {copied ? 'Copied!' : 'Copy to Clipboard'}
             </Button>
           </div>
           <DialogFooter>
-            <Button onClick={() => setShowNewKeyDialog(false)}>
-              Done
-            </Button>
+            <Button variant="outline" onClick={() => setShowNewKeyDialog(false)}>Done</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -3,63 +3,51 @@
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { apiClient, type UsageLog, type UsageStats } from '@/lib/api'
-import { formatDate, formatBytes } from '@/lib/utils'
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
-
-const COLORS = ['hsl(var(--primary))', 'hsl(142.1 76.2% 50%)', 'hsl(47 96% 53%)', 'hsl(215 78% 54%)']
+import { getProfile, getUsageLogs, type ProfileRow, type UsageLogRow } from '@/lib/api'
+import { formatDate } from '@/lib/utils'
+import { BarChart3, Zap, Activity } from 'lucide-react'
 
 export default function UsagePage() {
-  const [usageLogs, setUsageLogs] = useState<UsageLog[]>([])
-  const [stats, setStats] = useState<UsageStats | null>(null)
+  const [profile, setProfile] = useState<ProfileRow | null>(null)
+  const [logs, setLogs] = useState<UsageLogRow[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [logsData, statsData] = await Promise.all([
-          apiClient.getUsageLogs(50),
-          apiClient.getUsageStats()
-        ])
-        setUsageLogs(logsData)
-        setStats(statsData)
-      } catch (error) {
-        console.error('Error loading usage data:', error)
-      } finally {
-        setLoading(false)
-      }
+    async function load() {
+      const [p, l] = await Promise.all([getProfile(), getUsageLogs(100)])
+      setProfile(p)
+      setLogs(l)
+      setLoading(false)
     }
-
-    loadData()
+    load()
   }, [])
 
-  const getEndpointBreakdown = () => {
-    const breakdown: Record<string, number> = {}
-    usageLogs.forEach(log => {
-      if (breakdown[log.endpoint]) {
-        breakdown[log.endpoint] += log.credits_consumed
-      } else {
-        breakdown[log.endpoint] = log.credits_consumed
-      }
-    })
+  // Endpoint breakdown
+  const breakdown: Record<string, { calls: number; credits: number }> = {}
+  logs.forEach(log => {
+    if (!breakdown[log.endpoint]) breakdown[log.endpoint] = { calls: 0, credits: 0 }
+    breakdown[log.endpoint].calls++
+    breakdown[log.endpoint].credits += log.credits_used
+  })
+  const endpointList = Object.entries(breakdown)
+    .map(([endpoint, data]) => ({ endpoint, ...data }))
+    .sort((a, b) => b.credits - a.credits)
 
-    return Object.entries(breakdown)
-      .map(([endpoint, credits]) => ({ endpoint, credits }))
-      .sort((a, b) => b.credits - a.credits)
-  }
-
-  const pieChartData = getEndpointBreakdown().slice(0, 4)
+  const totalCreditsFromLogs = logs.reduce((s, l) => s + l.credits_used, 0)
+  const successRate = logs.length > 0
+    ? Math.round((logs.filter(l => l.status_code < 400).length / logs.length) * 100)
+    : 100
 
   if (loading) {
     return (
       <div className="space-y-6">
         <h1 className="text-3xl font-bold">Usage</h1>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {[...Array(2)].map((_, i) => (
-            <Card key={i}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[1, 2, 3].map(i => (
+            <Card key={i} className="bg-card/50 border-border">
               <CardHeader className="animate-pulse">
-                <div className="h-6 bg-muted rounded w-1/2"></div>
-                <div className="h-4 bg-muted rounded w-3/4"></div>
+                <div className="h-4 bg-muted rounded w-1/2" />
+                <div className="h-8 bg-muted rounded w-1/3 mt-2" />
               </CardHeader>
             </Card>
           ))}
@@ -69,174 +57,116 @@ export default function UsagePage() {
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Usage</h1>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold">Usage</h1>
+        <p className="text-muted-foreground mt-1">Monitor your API consumption and activity</p>
+      </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Credits Used</CardTitle>
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-card/50 border-border">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Credits Used</CardTitle>
+            <Zap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {stats ? stats.credits_used.toLocaleString() : 'N/A'}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {stats ? `${stats.credits_remaining.toLocaleString()} remaining` : 'No data'}
+            <div className="text-2xl font-bold">{profile?.credits_used?.toLocaleString() ?? 0}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Resets {profile?.credits_reset_at ? formatDate(profile.credits_reset_at) : 'monthly'}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">This Month</CardTitle>
+        <Card className="bg-card/50 border-border">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total API Calls</CardTitle>
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {stats ? stats.usage_this_month.toLocaleString() : 'N/A'}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Credits consumed
-            </p>
+            <div className="text-2xl font-bold">{logs.length}</div>
+            <p className="text-xs text-muted-foreground mt-1">Recent requests</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">API Calls Today</CardTitle>
+        <Card className="bg-card/50 border-border">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Success Rate</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {stats ? stats.api_calls_today.toLocaleString() : 'N/A'}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Total requests
+            <div className="text-2xl font-bold">{successRate}%</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {logs.filter(l => l.status_code >= 400).length} errors
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Chart and Recent Usage */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+      {/* Endpoint breakdown */}
+      {endpointList.length > 0 && (
+        <Card className="bg-card/50 border-border">
           <CardHeader>
-            <CardTitle>Usage by Endpoint</CardTitle>
-            <CardDescription>Credit consumption breakdown</CardDescription>
+            <CardTitle className="text-base">Usage by Endpoint</CardTitle>
           </CardHeader>
-          <CardContent>
-            {pieChartData.length > 0 ? (
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={pieChartData}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      fill="hsl(var(--primary))"
-                      dataKey="credits"
-                      label={({ endpoint, percent }) => `${endpoint} (${(percent * 100).toFixed(0)}%)`}
-                    >
-                      {pieChartData.map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center h-80 text-muted-foreground">
-                No usage data available
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Usage</CardTitle>
-            <CardDescription>Latest API calls and credit consumption</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {usageLogs.length > 0 ? (
-              <div className="space-y-4 max-h-80 overflow-y-auto">
-                {usageLogs.slice(0, 10).map((log) => (
-                  <div key={log.id} className="flex items-center justify-between border-b pb-2">
-                    <div>
-                      <p className="font-medium text-sm">{log.endpoint}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatDate(log.created_at)}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium text-sm">{log.credits_consumed} credits</p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatBytes(log.request_size + log.response_size)}
-                      </p>
-                    </div>
+          <CardContent className="space-y-3">
+            {endpointList.map(({ endpoint, calls, credits }) => {
+              const pct = totalCreditsFromLogs > 0 ? (credits / totalCreditsFromLogs) * 100 : 0
+              return (
+                <div key={endpoint}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="font-medium">{endpoint}</span>
+                    <span className="text-muted-foreground">{calls} calls · {credits} credits</span>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex items-center justify-center h-40 text-muted-foreground">
-                No usage logs found
-              </div>
-            )}
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              )
+            })}
           </CardContent>
         </Card>
-      </div>
+      )}
 
-      {/* Detailed Logs Table */}
-      <Card>
+      {/* Logs table */}
+      <Card className="bg-card/50 border-border">
         <CardHeader>
-          <CardTitle>Usage Logs</CardTitle>
-          <CardDescription>Complete history of your API usage</CardDescription>
+          <CardTitle className="text-base">Recent API Calls</CardTitle>
+          <CardDescription>Your latest requests</CardDescription>
         </CardHeader>
         <CardContent>
-          {usageLogs.length > 0 ? (
+          {logs.length > 0 ? (
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="border-border hover:bg-transparent">
                   <TableHead>Endpoint</TableHead>
                   <TableHead>Credits</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Request Size</TableHead>
-                  <TableHead>Response Size</TableHead>
                   <TableHead>Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {usageLogs.map((log) => (
-                  <TableRow key={log.id}>
+                {logs.map(log => (
+                  <TableRow key={log.id} className="border-border">
                     <TableCell className="font-medium">{log.endpoint}</TableCell>
-                    <TableCell>{log.credits_consumed}</TableCell>
+                    <TableCell>{log.credits_used}</TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        log.status === 'success' 
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                          : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                      <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${
+                        log.status_code < 400
+                          ? 'bg-emerald-500/15 text-emerald-400'
+                          : 'bg-red-500/15 text-red-400'
                       }`}>
-                        {log.status}
+                        {log.status_code}
                       </span>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatBytes(log.request_size)}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatBytes(log.response_size)}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatDate(log.created_at)}
-                    </TableCell>
+                    <TableCell className="text-muted-foreground">{formatDate(log.created_at)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              No usage logs found. Start using the API to see your activity here.
+            <div className="text-center py-12 text-muted-foreground">
+              No usage logs yet. Start making API calls to see activity here.
             </div>
           )}
         </CardContent>
