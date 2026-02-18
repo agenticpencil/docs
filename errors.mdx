@@ -1,0 +1,578 @@
+---
+title: 'Error Codes & Responses'
+description: 'Comprehensive guide to AgenticPencil API error handling and troubleshooting'
+---
+
+## Error Response Format
+
+All API errors follow a consistent JSON structure to make error handling predictable:
+
+```json Error Response Structure
+{
+  "status": "error",
+  "error": "Brief error description",
+  "message": "Human-readable error details",
+  "code": "MACHINE_READABLE_CODE",
+  "details": {
+    "field": "Additional context when applicable"
+  }
+}
+```
+
+<ResponseField name="status" type="string">
+  Always "error" for error responses
+</ResponseField>
+
+<ResponseField name="error" type="string">
+  Brief, human-readable error summary
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Detailed error description with actionable guidance
+</ResponseField>
+
+<ResponseField name="code" type="string">
+  Machine-readable error code for programmatic handling
+</ResponseField>
+
+<ResponseField name="details" type="object">
+  Additional context specific to the error (optional)
+</ResponseField>
+
+## HTTP Status Codes
+
+<CardGroup cols={2}>
+  <Card
+    title="400 Bad Request"
+    icon="exclamation-triangle"
+    iconType="duotone"
+  >
+    Invalid request format, missing required fields, or invalid parameters
+  </Card>
+  <Card
+    title="401 Unauthorized"
+    icon="lock"
+    iconType="duotone"
+  >
+    Authentication failed - invalid or missing API key
+  </Card>
+  <Card
+    title="403 Forbidden"
+    icon="ban"
+    iconType="duotone"
+  >
+    Valid authentication but insufficient permissions
+  </Card>
+  <Card
+    title="404 Not Found"
+    icon="question-circle"
+    iconType="duotone"
+  >
+    Endpoint or resource doesn't exist
+  </Card>
+  <Card
+    title="429 Too Many Requests"
+    icon="stopwatch"
+    iconType="duotone"
+  >
+    Rate limit exceeded - too many requests in time window
+  </Card>
+  <Card
+    title="500 Internal Server Error"
+    icon="server"
+    iconType="duotone"
+  >
+    Unexpected server error - contact support if persistent
+  </Card>
+</CardGroup>
+
+## Authentication Errors
+
+<AccordionGroup>
+  <Accordion title="INVALID_API_KEY - Invalid or malformed API key">
+    ```json
+    {
+      "status": "error",
+      "error": "Invalid API key",
+      "message": "The provided API key is invalid or has been revoked",
+      "code": "INVALID_API_KEY"
+    }
+    ```
+    
+    **Common Causes:**
+    - API key doesn't start with `ap_`
+    - Typo in API key
+    - API key has been revoked
+    - Using wrong environment's key
+    
+    **Solutions:**
+    - Verify API key format and spelling
+    - Generate a new API key from your dashboard
+    - Ensure you're using the correct environment
+  </Accordion>
+
+  <Accordion title="MISSING_AUTH_HEADER - Authorization header missing">
+    ```json
+    {
+      "status": "error",
+      "error": "Missing authorization",
+      "message": "Authorization header is required",
+      "code": "MISSING_AUTH_HEADER"
+    }
+    ```
+    
+    **Common Causes:**
+    - Forgot to include Authorization header
+    - Header name is incorrect (should be `Authorization`)
+    - Missing "Bearer " prefix
+    
+    **Solutions:**
+    - Add `Authorization: Bearer ap_your_key_here` header
+    - Check header spelling and format
+  </Accordion>
+
+  <Accordion title="EXPIRED_API_KEY - API key has expired">
+    ```json
+    {
+      "status": "error",
+      "error": "API key expired",
+      "message": "Your API key has expired. Please generate a new one",
+      "code": "EXPIRED_API_KEY"
+    }
+    ```
+    
+    **Solutions:**
+    - Generate a new API key from your dashboard
+    - Update your application with the new key
+    - Set up key rotation reminders
+  </Accordion>
+</AccordionGroup>
+
+## Rate Limiting Errors
+
+<AccordionGroup>
+  <Accordion title="RATE_LIMIT_EXCEEDED - Too many requests">
+    ```json
+    {
+      "status": "error",
+      "error": "Rate limit exceeded",
+      "message": "You have exceeded your rate limit of 60 requests per minute. Please try again in 23 seconds.",
+      "code": "RATE_LIMIT_EXCEEDED",
+      "retry_after": 23
+    }
+    ```
+    
+    **Response Headers:**
+    ```
+    X-RateLimit-Limit: 60
+    X-RateLimit-Remaining: 0
+    X-RateLimit-Reset: 1708185623
+    Retry-After: 23
+    ```
+    
+    **Solutions:**
+    - Wait for the time specified in `retry_after`
+    - Implement exponential backoff
+    - Upgrade to a higher plan for increased limits
+    - Use multiple API keys to distribute load
+  </Accordion>
+</AccordionGroup>
+
+## Request Validation Errors
+
+<AccordionGroup>
+  <Accordion title="MISSING_REQUIRED_FIELD - Required parameter missing">
+    ```json
+    {
+      "status": "error",
+      "error": "Missing required field",
+      "message": "The 'domain' field is required but was not provided",
+      "code": "MISSING_REQUIRED_FIELD",
+      "details": {
+        "field": "domain",
+        "required_fields": ["domain", "topic", "country"]
+      }
+    }
+    ```
+    
+    **Solutions:**
+    - Check API documentation for required fields
+    - Ensure all required parameters are included
+    - Verify request body structure
+  </Accordion>
+
+  <Accordion title="INVALID_FIELD_FORMAT - Field format is incorrect">
+    ```json
+    {
+      "status": "error",
+      "error": "Invalid field format",
+      "message": "Country code must be a 2-letter ISO code (e.g., 'US', 'UK')",
+      "code": "INVALID_FIELD_FORMAT",
+      "details": {
+        "field": "country",
+        "provided_value": "USA",
+        "expected_format": "2-letter ISO code"
+      }
+    }
+    ```
+    
+    **Solutions:**
+    - Check the expected format in API documentation
+    - Validate input data before making requests
+    - Use proper data types and formats
+  </Accordion>
+
+  <Accordion title="INVALID_DOMAIN_FORMAT - Domain format incorrect">
+    ```json
+    {
+      "status": "error",
+      "error": "Invalid domain format",
+      "message": "Domain must be in format 'example.com' without protocol or path",
+      "code": "INVALID_DOMAIN_FORMAT",
+      "details": {
+        "field": "domain",
+        "provided_value": "https://example.com/blog",
+        "expected_format": "example.com"
+      }
+    }
+    ```
+    
+    **Solutions:**
+    - Remove protocol (http://, https://)
+    - Remove paths, subdomains (www.), ports
+    - Use just the root domain: `example.com`
+  </Accordion>
+</AccordionGroup>
+
+## Business Logic Errors
+
+<AccordionGroup>
+  <Accordion title="INSUFFICIENT_CREDITS - Not enough credits">
+    ```json
+    {
+      "status": "error",
+      "error": "Insufficient credits",
+      "message": "This request requires 15 credits but you only have 8 remaining",
+      "code": "INSUFFICIENT_CREDITS",
+      "details": {
+        "required_credits": 15,
+        "available_credits": 8,
+        "upgrade_url": "https://platform.agenticpencil.com/billing"
+      }
+    }
+    ```
+    
+    **Solutions:**
+    - Wait for next billing cycle (free/monthly plans)
+    - Upgrade to a higher plan
+    - Monitor credit usage with `/v1/usage` endpoint
+  </Accordion>
+
+  <Accordion title="DOMAIN_NOT_FOUND - Domain cannot be analyzed">
+    ```json
+    {
+      "status": "error",
+      "error": "Domain not found",
+      "message": "Unable to analyze domain 'nonexistent-domain.xyz' - domain may not exist or be accessible",
+      "code": "DOMAIN_NOT_FOUND",
+      "details": {
+        "domain": "nonexistent-domain.xyz"
+      }
+    }
+    ```
+    
+    **Solutions:**
+    - Verify the domain exists and is accessible
+    - Check for typos in domain name
+    - Ensure domain has sufficient content to analyze
+    - Try again later if domain is temporarily unavailable
+  </Accordion>
+
+  <Accordion title="SITEMAP_NOT_FOUND - Sitemap inaccessible">
+    ```json
+    {
+      "status": "error",
+      "error": "Sitemap not found",
+      "message": "Could not find or access sitemap at 'https://example.com/sitemap.xml'",
+      "code": "SITEMAP_NOT_FOUND",
+      "details": {
+        "sitemap_url": "https://example.com/sitemap.xml",
+        "attempted_locations": [
+          "https://example.com/sitemap.xml",
+          "https://example.com/sitemap_index.xml",
+          "https://example.com/robots.txt"
+        ]
+      }
+    }
+    ```
+    
+    **Solutions:**
+    - Verify sitemap URL is correct and accessible
+    - Check robots.txt for sitemap location
+    - Ensure sitemap is publicly accessible (not behind authentication)
+    - Omit sitemap_url to let us auto-discover it
+  </Accordion>
+</AccordionGroup>
+
+## Plan and Billing Errors
+
+<AccordionGroup>
+  <Accordion title="PLAN_LIMIT_EXCEEDED - Plan feature limit reached">
+    ```json
+    {
+      "status": "error",
+      "error": "Plan limit exceeded",
+      "message": "Your Free plan allows maximum 10 keywords per request. Upgrade to Pro for up to 100 keywords.",
+      "code": "PLAN_LIMIT_EXCEEDED",
+      "details": {
+        "current_plan": "free",
+        "limit_type": "keywords_per_request",
+        "current_limit": 10,
+        "requested": 25,
+        "upgrade_plans": ["pro", "scale"]
+      }
+    }
+    ```
+    
+    **Solutions:**
+    - Reduce request size to fit plan limits
+    - Upgrade to a higher plan
+    - Split large requests into multiple smaller ones
+  </Accordion>
+
+  <Accordion title="SUBSCRIPTION_REQUIRED - Paid plan needed">
+    ```json
+    {
+      "status": "error",
+      "error": "Subscription required",
+      "message": "This feature requires a paid subscription. Please upgrade to Pro or Scale plan.",
+      "code": "SUBSCRIPTION_REQUIRED",
+      "details": {
+        "required_plans": ["pro", "scale", "enterprise"],
+        "current_plan": "free"
+      }
+    }
+    ```
+    
+    **Solutions:**
+    - Upgrade to a paid plan
+    - Use alternative endpoints available on your plan
+  </Accordion>
+</AccordionGroup>
+
+## Server Errors
+
+<AccordionGroup>
+  <Accordion title="INTERNAL_SERVER_ERROR - Unexpected server error">
+    ```json
+    {
+      "status": "error",
+      "error": "Internal server error",
+      "message": "An unexpected error occurred. Our team has been notified. Please try again later.",
+      "code": "INTERNAL_SERVER_ERROR",
+      "details": {
+        "incident_id": "inc_1234567890abcdef",
+        "timestamp": "2024-02-17T17:10:32Z"
+      }
+    }
+    ```
+    
+    **Solutions:**
+    - Try the request again after a short delay
+    - Contact support with the incident_id if problem persists
+    - Check our status page for known issues
+  </Accordion>
+
+  <Accordion title="SERVICE_UNAVAILABLE - Temporary service disruption">
+    ```json
+    {
+      "status": "error",
+      "error": "Service temporarily unavailable",
+      "message": "The service is temporarily unavailable due to maintenance. Please try again in a few minutes.",
+      "code": "SERVICE_UNAVAILABLE",
+      "details": {
+        "retry_after": 300,
+        "maintenance_window": "2024-02-17T18:00:00Z - 2024-02-17T18:30:00Z"
+      }
+    }
+    ```
+    
+    **Solutions:**
+    - Wait for the specified retry_after time
+    - Check our status page for maintenance schedules
+    - Implement retry logic with exponential backoff
+  </Accordion>
+</AccordionGroup>
+
+## Error Handling Best Practices
+
+### 1. Implement Proper Error Handling
+
+<CodeGroup>
+
+```python Python
+import requests
+import time
+
+def handle_api_call(url, headers, data, max_retries=3):
+    for attempt in range(max_retries + 1):
+        try:
+            response = requests.post(url, headers=headers, json=data)
+            
+            # Handle success
+            if response.status_code == 200:
+                return response.json()
+            
+            # Parse error response
+            error_data = response.json()
+            error_code = error_data.get('code')
+            
+            # Handle specific errors
+            if error_code == 'RATE_LIMIT_EXCEEDED':
+                retry_after = error_data.get('retry_after', 60)
+                if attempt < max_retries:
+                    print(f"Rate limited, retrying after {retry_after} seconds")
+                    time.sleep(retry_after)
+                    continue
+                    
+            elif error_code == 'INSUFFICIENT_CREDITS':
+                print("❌ Insufficient credits - please upgrade your plan")
+                return None
+                
+            elif error_code in ['INVALID_API_KEY', 'EXPIRED_API_KEY']:
+                print("❌ Authentication error - check your API key")
+                return None
+                
+            elif error_code == 'INTERNAL_SERVER_ERROR':
+                if attempt < max_retries:
+                    delay = 2 ** attempt  # Exponential backoff
+                    print(f"Server error, retrying in {delay} seconds")
+                    time.sleep(delay)
+                    continue
+            
+            # For other errors, don't retry
+            print(f"❌ API Error: {error_data.get('message')}")
+            return None
+            
+        except requests.RequestException as e:
+            if attempt == max_retries:
+                print(f"❌ Request failed: {e}")
+                return None
+                
+            time.sleep(2 ** attempt)
+    
+    return None
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+async function handleApiCall(url, config, maxRetries = 3) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await axios.post(url, config.data, {
+        headers: config.headers
+      });
+      
+      return response.data;
+      
+    } catch (error) {
+      if (error.response) {
+        const errorData = error.response.data;
+        const errorCode = errorData.code;
+        
+        switch (errorCode) {
+          case 'RATE_LIMIT_EXCEEDED':
+            if (attempt < maxRetries) {
+              const retryAfter = errorData.retry_after || 60;
+              console.log(`Rate limited, retrying after ${retryAfter} seconds`);
+              await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+              continue;
+            }
+            break;
+            
+          case 'INSUFFICIENT_CREDITS':
+            console.error('❌ Insufficient credits - please upgrade your plan');
+            return null;
+            
+          case 'INVALID_API_KEY':
+          case 'EXPIRED_API_KEY':
+            console.error('❌ Authentication error - check your API key');
+            return null;
+            
+          case 'INTERNAL_SERVER_ERROR':
+            if (attempt < maxRetries) {
+              const delay = Math.pow(2, attempt) * 1000;
+              console.log(`Server error, retrying in ${delay/1000} seconds`);
+              await new Promise(resolve => setTimeout(resolve, delay));
+              continue;
+            }
+            break;
+        }
+        
+        console.error(`❌ API Error: ${errorData.message}`);
+        return null;
+      }
+      
+      if (attempt === maxRetries) {
+        console.error(`❌ Request failed: ${error.message}`);
+        return null;
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+    }
+  }
+  
+  return null;
+}
+```
+
+</CodeGroup>
+
+### 2. Log Errors for Debugging
+
+Always log error details for debugging and monitoring:
+
+```python Python Error Logging
+import logging
+import json
+
+def log_api_error(error_response, request_data):
+    logger = logging.getLogger('agenticpencil_api')
+    
+    error_info = {
+        'timestamp': datetime.now().isoformat(),
+        'error_code': error_response.get('code'),
+        'error_message': error_response.get('message'),
+        'request_endpoint': request_data.get('endpoint'),
+        'request_params': request_data.get('params', {}),
+        'incident_id': error_response.get('details', {}).get('incident_id')
+    }
+    
+    logger.error(f"AgenticPencil API Error: {json.dumps(error_info)}")
+```
+
+### 3. User-Friendly Error Messages
+
+Transform technical errors into user-friendly messages:
+
+```python User-Friendly Error Mapping
+ERROR_MESSAGES = {
+    'INVALID_API_KEY': 'Your API key is invalid. Please check your configuration.',
+    'RATE_LIMIT_EXCEEDED': 'You\'re sending requests too quickly. Please wait a moment and try again.',
+    'INSUFFICIENT_CREDITS': 'You don\'ve used all your credits this month. Consider upgrading your plan.',
+    'DOMAIN_NOT_FOUND': 'We couldn\'t analyze this domain. Please check the URL and try again.',
+    'INTERNAL_SERVER_ERROR': 'Something went wrong on our end. Please try again in a few minutes.'
+}
+
+def get_user_friendly_error(error_code, default_message):
+    return ERROR_MESSAGES.get(error_code, default_message)
+```
+
+<Warning>
+  **Never expose raw error details to end users** - always sanitize error messages to prevent information leakage.
+</Warning>
+
+<Tip>
+  **Monitor error patterns** - Frequent specific errors might indicate issues with your integration that need addressing.
+</Tip>

@@ -1,0 +1,314 @@
+---
+title: "Keywords Gap Analysis"
+api: "POST https://api.agenticpencil.com/v1/keywords/gaps"
+description: "Find keyword opportunities your competitors rank for but you don't"
+---
+
+Identify keyword gaps by analyzing what your competitors rank for that you don't. This powerful competitive analysis helps you discover untapped opportunities and content ideas.
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "https://api.agenticpencil.com/v1/keywords/gaps" \
+  -H "Authorization: Bearer ap_your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "domain": "yoursite.com",
+    "competitors": [
+      "competitor1.com",
+      "competitor2.com",
+      "competitor3.com"
+    ],
+    "country": "US",
+    "limit": 50
+  }'
+```
+
+```python Python
+import requests
+
+url = "https://api.agenticpencil.com/v1/keywords/gaps"
+headers = {
+    "Authorization": "Bearer ap_your_api_key_here",
+    "Content-Type": "application/json"
+}
+data = {
+    "domain": "yoursite.com",
+    "competitors": [
+        "competitor1.com",
+        "competitor2.com",
+        "competitor3.com"
+    ],
+    "country": "US",
+    "limit": 50
+}
+
+response = requests.post(url, headers=headers, json=data)
+result = response.json()
+```
+
+```javascript Node.js
+const axios = require('axios');
+
+const response = await axios.post(
+  'https://api.agenticpencil.com/v1/keywords/gaps',
+  {
+    domain: 'yoursite.com',
+    competitors: [
+      'competitor1.com',
+      'competitor2.com',
+      'competitor3.com'
+    ],
+    country: 'US',
+    limit: 50
+  },
+  {
+    headers: {
+      'Authorization': 'Bearer ap_your_api_key_here',
+      'Content-Type': 'application/json'
+    }
+  }
+);
+```
+
+</RequestExample>
+
+## Authentication
+
+<ParamField header="Authorization" type="string" required>
+  Bearer token using your AgenticPencil API key
+</ParamField>
+
+## Request Body
+
+<ParamField body="domain" type="string" required>
+  Your website domain (e.g., "yoursite.com")
+</ParamField>
+
+<ParamField body="competitors" type="array" required>
+  Array of competitor domains to analyze (1-5 domains recommended for best performance)
+</ParamField>
+
+<ParamField body="country" type="string" required>
+  Two-letter country code for geo-targeted results (e.g., "US", "UK", "CA")
+</ParamField>
+
+<ParamField body="limit" type="integer">
+  Maximum number of gap keywords to return (1-100, default: 50)
+</ParamField>
+
+## Response
+
+<ResponseField name="status" type="string">
+  Status of the request ("success" or "error")
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="data object">
+    <ResponseField name="gaps" type="array">
+      Array of keyword gap opportunities
+      <Expandable title="gap object">
+        <ResponseField name="keyword" type="string">
+          The keyword phrase where you have a gap
+        </ResponseField>
+        <ResponseField name="search_volume" type="integer">
+          Average monthly search volume
+        </ResponseField>
+        <ResponseField name="difficulty" type="integer">
+          SEO difficulty score (1-100)
+        </ResponseField>
+        <ResponseField name="opportunity_score" type="integer">
+          Gap opportunity score (1-100, higher is better)
+        </ResponseField>
+        <ResponseField name="competitors_ranking" type="array">
+          List of competitors ranking for this keyword
+          <Expandable title="ranking object">
+            <ResponseField name="domain" type="string">
+              Competitor domain
+            </ResponseField>
+            <ResponseField name="position" type="integer">
+              Their ranking position (1-100)
+            </ResponseField>
+            <ResponseField name="url" type="string">
+              The ranking URL
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+        <ResponseField name="content_suggestions" type="array">
+          Suggested content types for this keyword
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="summary" type="object">
+      <Expandable title="summary object">
+        <ResponseField name="total_gaps_found" type="integer">
+          Total number of gap opportunities identified
+        </ResponseField>
+        <ResponseField name="avg_opportunity_score" type="number">
+          Average opportunity score across all gaps
+        </ResponseField>
+        <ResponseField name="competitors_analyzed" type="integer">
+          Number of competitors successfully analyzed
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="credits_used" type="integer">
+      Number of credits consumed by this request
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="credits_remaining" type="integer">
+  Your remaining credit balance
+</ResponseField>
+
+<ResponseExample>
+
+```json Success Response
+{
+  "status": "success",
+  "data": {
+    "gaps": [
+      {
+        "keyword": "sustainable fashion trends 2024",
+        "search_volume": 18500,
+        "difficulty": 45,
+        "opportunity_score": 82,
+        "competitors_ranking": [
+          {
+            "domain": "competitor1.com",
+            "position": 3,
+            "url": "https://competitor1.com/2024-fashion-trends"
+          },
+          {
+            "domain": "competitor2.com",
+            "position": 7,
+            "url": "https://competitor2.com/sustainable-trends"
+          }
+        ],
+        "content_suggestions": [
+          "trend analysis article",
+          "seasonal fashion guide",
+          "expert predictions post"
+        ]
+      },
+      {
+        "keyword": "eco friendly fabric types",
+        "search_volume": 12200,
+        "difficulty": 38,
+        "opportunity_score": 79,
+        "competitors_ranking": [
+          {
+            "domain": "competitor1.com",
+            "position": 2,
+            "url": "https://competitor1.com/fabric-guide"
+          }
+        ],
+        "content_suggestions": [
+          "comprehensive fabric guide",
+          "material comparison chart",
+          "sustainability deep dive"
+        ]
+      }
+    ],
+    "summary": {
+      "total_gaps_found": 2,
+      "avg_opportunity_score": 80.5,
+      "competitors_analyzed": 3
+    },
+    "credits_used": 10
+  },
+  "credits_remaining": 240
+}
+```
+
+```json Error Response
+{
+  "status": "error",
+  "error": "Too many competitors",
+  "message": "Maximum 5 competitors allowed per request",
+  "code": "COMPETITOR_LIMIT_EXCEEDED"
+}
+```
+
+</ResponseExample>
+
+## Credit Cost
+
+<Info>
+  **Credit Cost**: 10 credits per request
+</Info>
+
+This endpoint consumes 10 credits per request, regardless of the number of competitors or results returned.
+
+## Understanding Gap Analysis
+
+<AccordionGroup>
+  <Accordion title="What is a Keyword Gap?">
+    A keyword gap occurs when your competitors rank well for a keyword that your domain doesn't rank for at all, or ranks poorly for. These represent immediate opportunities to create content and capture search traffic.
+  </Accordion>
+
+  <Accordion title="How is Opportunity Score Calculated?">
+    Our proprietary opportunity score considers:
+    - Search volume potential
+    - Competition difficulty
+    - Your domain authority vs competitors
+    - Content format alignment
+    - Historical ranking patterns
+  </Accordion>
+
+  <Accordion title="Why Only 5 Competitors?">
+    Analyzing too many competitors can dilute results and provide less actionable insights. We recommend focusing on your 3-5 closest competitors for the most relevant gap analysis.
+  </Accordion>
+
+  <Accordion title="Content Suggestions">
+    Based on competitor analysis and search intent, we provide content format suggestions that have the best chance of ranking for each gap keyword.
+  </Accordion>
+</AccordionGroup>
+
+## Use Cases
+
+<CardGroup cols={2}>
+  <Card
+    title="Content Strategy"
+    icon="lightbulb"
+  >
+    Discover high-impact content ideas your competitors are capitalizing on
+  </Card>
+  <Card
+    title="Competitive SEO"
+    icon="chart-line"
+  >
+    Identify where competitors have advantages and plan to compete
+  </Card>
+  <Card
+    title="Market Positioning"
+    icon="target"
+  >
+    Find underserved niches in your market space
+  </Card>
+  <Card
+    title="Quick Wins"
+    icon="rocket"
+  >
+    Prioritize keywords with high opportunity scores for faster results
+  </Card>
+</CardGroup>
+
+## Best Practices
+
+<Tip>
+  **Quality over Quantity**: Focus on 3-5 direct competitors rather than a large list of loosely related domains.
+</Tip>
+
+<Tip>
+  **Regular Analysis**: Run gap analysis monthly to discover new opportunities as the competitive landscape evolves.
+</Tip>
+
+<Tip>
+  **Action Planning**: Use the content suggestions and opportunity scores to prioritize which gaps to address first.
+</Tip>
+
+<Warning>
+  Make sure competitor domains are relevant to your niche. Analyzing unrelated competitors will produce less useful results.
+</Warning>
